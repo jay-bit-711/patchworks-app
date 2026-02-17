@@ -1,0 +1,22 @@
+name: patchworks_app
+version: 0.1.0+1
+description: Patchworks MVP for Hyderabad home repair.
+publish_to: none
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.1
+  google_sign_in: ^6.2.1
+  http: ^1.2.2
+  intl: ^0.19.0
+  file_picker: ^8.1.2
+  confetti: ^0.7.0
+
+flutter:
+  uses-material-design: true

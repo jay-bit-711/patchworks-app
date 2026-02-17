@@ -5,3 +5,10 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+.DS_Store
+media/
+evidences/
+frontend/.dart_tool/
+frontend/build/
+frontend/.idea/
+frontend/.packages

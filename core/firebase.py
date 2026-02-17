@@ -1,33 +1,38 @@
-# core/firebase.py
-import firebase_admin
-from firebase_admin import credentials, auth, storage
 import os
 from pathlib import Path
+from typing import Optional
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent  # Adjust to project root
+import firebase_admin
+from firebase_admin import auth, credentials, storage
 
-# Load service account securely
-SERVICE_ACCOUNT_PATH = os.path.join(BASE_DIR, 'service-account.json')
+BASE_DIR = Path(__file__).resolve().parent.parent
+SERVICE_ACCOUNT_PATH = os.getenv("FIREBASE_CREDENTIALS_PATH", str(BASE_DIR / "service-account.json"))
+STORAGE_BUCKET = os.getenv("FIREBASE_STORAGE_BUCKET", "patchworks-3178f.firebasestorage.app")
 
-if not firebase_admin._apps:  # Initialize only once
-    if os.path.exists(SERVICE_ACCOUNT_PATH):
-        cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
-    else:
-        # Fallback for Heroku/env var
-        cred = credentials.ApplicationDefault()  # Or raise error in prod
 
-    firebase_admin.initialize_app(cred, {
-        'storageBucket': 'patchworks-3178f.appspot.com'  # Your bucket from config
-    })
+def _init_app():
+    if firebase_admin._apps:
+        return firebase_admin.get_app()
+    if not os.path.exists(SERVICE_ACCOUNT_PATH):
+        return None
+    cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
+    return firebase_admin.initialize_app(cred, {"storageBucket": STORAGE_BUCKET})
 
-# Helper to verify Google SSO ID token (from client app)
-def verify_id_token(id_token):
+
+def verify_id_token(id_token: str) -> dict:
+    app = _init_app()
+    if app is None:
+        raise ValueError("Firebase app is not configured. Missing service account file.")
     try:
-        decoded_token = auth.verify_id_token(id_token)
-        return decoded_token  # {'uid': ..., 'email': ..., etc.}
-    except Exception as e:
-        raise ValueError(f"Token verification failed: {str(e)}")
+        return auth.verify_id_token(id_token, app=app)
+    except Exception as exc:
+        raise ValueError(f"Token verification failed: {exc}") from exc
 
-# Get storage bucket
-def get_bucket():
-    return storage.bucket()
+
+def get_bucket() -> Optional[storage.bucket]:
+    if os.getenv("ENABLE_FIREBASE_STORAGE", "0") != "1":
+        return None
+    app = _init_app()
+    if app is None:
+        return None
+    return storage.bucket(app=app)
