@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -29,7 +30,9 @@ class JobViewSet(viewsets.ModelViewSet):
         if user.role in {"admin", "superadmin"}:
             return Job.objects.all().order_by("-created_at")
         if user.role == "mestri":
-            return Job.objects.filter(assigned_mestri=user).order_by("-created_at")
+            return Job.objects.filter(Q(assigned_mestri=user) | Q(status="pending", assigned_mestri__isnull=True)).order_by(
+                "-created_at"
+            )
         return Job.objects.filter(user=user).order_by("-created_at")
 
     def perform_create(self, serializer):
@@ -110,3 +113,18 @@ class AdminUserViewSet(viewsets.ReadOnlyModelViewSet):
         user.role = role
         user.save(update_fields=["role"])
         return Response(UserSerializer(user).data)
+
+
+class EvidenceUploadView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        job_id = request.data.get("job_id")
+        if not job_id:
+            return Response({"detail": "job_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        job = get_object_or_404(Job, id=job_id)
+        serializer = EvidenceSerializer(data=request.data, context={"request": request, "job": job})
+        serializer.is_valid(raise_exception=True)
+        evidence = serializer.save()
+        return Response(EvidenceSerializer(evidence).data, status=status.HTTP_201_CREATED)

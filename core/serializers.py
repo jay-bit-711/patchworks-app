@@ -123,21 +123,34 @@ class RatingSerializer(serializers.ModelSerializer):
         if job.status != "done":
             raise serializers.ValidationError("Rating is allowed only when job is done.")
 
-        if user != job.user and user.role not in {"admin", "superadmin"}:
-            raise serializers.ValidationError("Only job owner can rate for this job.")
-
         if not job.assigned_mestri:
             raise serializers.ValidationError("Cannot rate without assigned mestri.")
+
+        if user == job.user:
+            attrs["_rated_user"] = job.assigned_mestri
+        elif user == job.assigned_mestri:
+            attrs["_rated_user"] = job.user
+        elif user.role in {"admin", "superadmin"}:
+            rated_user_id = self.context["request"].data.get("rated_user_id")
+            if not rated_user_id:
+                raise serializers.ValidationError("rated_user_id is required for admin rating.")
+            try:
+                attrs["_rated_user"] = User.objects.get(id=rated_user_id)
+            except User.DoesNotExist as exc:
+                raise serializers.ValidationError("rated_user_id is invalid.") from exc
+        else:
+            raise serializers.ValidationError("Only job owner or assigned mestri can rate this job.")
 
         return attrs
 
     def create(self, validated_data):
         job = self.context["job"]
+        rated_user = validated_data.pop("_rated_user")
         rating, _ = Rating.objects.update_or_create(
             job=job,
             rated_by=self.context["request"].user,
             defaults={
-                "rated_user": job.assigned_mestri,
+                "rated_user": rated_user,
                 "rating": validated_data["rating"],
                 "comments": validated_data.get("comments", ""),
             },

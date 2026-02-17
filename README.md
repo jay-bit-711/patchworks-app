@@ -35,6 +35,7 @@ python manage.py runserver
 - `POST /api/jobs/{id}/accept/`
 - `POST /api/jobs/{id}/assign/` (admin/superadmin)
 - `GET,POST /api/jobs/{id}/evidences/`
+- `POST /api/evidence/upload/`
 - `POST /api/jobs/{id}/rate/`
 - `GET /api/admin/users/`
 - `POST /api/admin/users/{id}/upgrade/`
@@ -44,7 +45,7 @@ python manage.py runserver
 - Max 2 evidences per job
 - Max 50MB per evidence
 - Role-based access for job actions and user upgrades
-- Ratings only when job status is `done`
+- Ratings only when job status is `done` (owner and mestri can both rate)
 
 ## Flutter app
 See `/frontend/README.md`.

@@ -72,7 +72,12 @@ class ApiClient {
       headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode != 200) throw Exception(response.body);
-    return jsonDecode(response.body) as List<dynamic>;
+    final decoded = jsonDecode(response.body);
+    if (decoded is List<dynamic>) return decoded;
+    if (decoded is Map<String, dynamic> && decoded['results'] is List<dynamic>) {
+      return decoded['results'] as List<dynamic>;
+    }
+    throw Exception('Unexpected jobs response format');
   }
 
   Future<void> createJob(String description, String location) async {
@@ -112,8 +117,9 @@ class ApiClient {
 
   Future<void> uploadEvidence(int jobId, PlatformFile file, bool isBefore) async {
     final token = await _auth.currentUser?.getIdToken(true);
-    final request = http.MultipartRequest('POST', Uri.parse('$kApiBaseUrl/jobs/$jobId/evidences/'));
+    final request = http.MultipartRequest('POST', Uri.parse('$kApiBaseUrl/evidence/upload/'));
     request.headers['Authorization'] = 'Bearer $token';
+    request.fields['job_id'] = jobId.toString();
     request.fields['is_before'] = isBefore.toString();
     request.files.add(await http.MultipartFile.fromPath('file', file.path!));
 
@@ -142,7 +148,12 @@ class ApiClient {
       headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode != 200) throw Exception(response.body);
-    return jsonDecode(response.body) as List<dynamic>;
+    final decoded = jsonDecode(response.body);
+    if (decoded is List<dynamic>) return decoded;
+    if (decoded is Map<String, dynamic> && decoded['results'] is List<dynamic>) {
+      return decoded['results'] as List<dynamic>;
+    }
+    throw Exception('Unexpected users response format');
   }
 
   Future<void> upgradeRole(int userId, String role) async {
@@ -429,6 +440,10 @@ class _JobsPageState extends State<JobsPage> {
                           if (widget.role == 'homeowner' && job['status'] == 'done')
                             IconButton(onPressed: () => onRate(job['id'] as int, 'like'), icon: const Text('👍', style: TextStyle(fontSize: 20))),
                           if (widget.role == 'homeowner' && job['status'] == 'done')
+                            IconButton(onPressed: () => onRate(job['id'] as int, 'dislike'), icon: const Text('👎', style: TextStyle(fontSize: 20))),
+                          if (widget.role == 'mestri' && job['status'] == 'done')
+                            IconButton(onPressed: () => onRate(job['id'] as int, 'like'), icon: const Text('👍', style: TextStyle(fontSize: 20))),
+                          if (widget.role == 'mestri' && job['status'] == 'done')
                             IconButton(onPressed: () => onRate(job['id'] as int, 'dislike'), icon: const Text('👎', style: TextStyle(fontSize: 20))),
                         ],
                       ),

@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -110,6 +109,28 @@ class PatchworksApiTests(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["rating"], "like")
+
+        self.client.force_authenticate(self.mestri)
+        response = self.client.post(
+            f"/api/jobs/{job.id}/rate/",
+            {"rating": "dislike", "comments": "Owner unavailable"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["rating"], "dislike")
+
+    def test_evidence_upload_endpoint(self):
+        job = Job.objects.create(user=self.homeowner, assigned_mestri=self.mestri, description="Door repair", location="Kondapur")
+
+        self.client.force_authenticate(self.mestri)
+        file_obj = SimpleUploadedFile("door.jpg", b"x" * 1024, content_type="image/jpeg")
+        response = self.client.post(
+            "/api/evidence/upload/",
+            {"job_id": job.id, "file": file_obj, "is_before": False},
+            format="multipart",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["job"], job.id)
 
     def tearDown(self):
         Evidence.objects.all().delete()

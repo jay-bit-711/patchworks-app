@@ -118,7 +118,7 @@ class Rating(models.Model):
         ('like', 'Like 👍'),
         ('dislike', 'Dislike 👎'),
     )
-    job = models.OneToOneField(Job, on_delete=models.CASCADE, related_name='rating')
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='ratings')
     rated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='given_ratings')
     rated_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_ratings')
     rating = models.CharField(max_length=10, choices=RATING_CHOICES, default='like')

@@ -2,7 +2,7 @@
 
 ## Automated
 - Backend tests executed: `./venv/bin/python manage.py test core.tests.PatchworksApiTests`
-- Result: PASS (5/5)
+- Result: PASS (6/6)
 
 ## Covered journeys
 - Homeowner can create jobs until cap (8)
@@ -11,6 +11,8 @@
 - Mestri can accept unassigned jobs
 - Admin role upgrade endpoint guard enforced
 - Rating blocked until job is `done`, then allowed
+- Two-way rating validated: homeowner -> mestri and mestri -> homeowner
+- Dedicated `/api/evidence/upload/` endpoint validated
 
 ## Manual test checklist (Flutter)
 1. Google sign in and role sync via `/api/auth/sync/`.
