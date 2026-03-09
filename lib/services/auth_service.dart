@@ -9,12 +9,16 @@ class AuthService extends ChangeNotifier {
 
   User? get currentUser => _auth.currentUser;
 
+  // Use a final instance to ensure consistency
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
   Future<UserCredential?> signInWithGoogle() async {
     print('DEBUG_AUTH: signInWithGoogle started');
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn();
       print('DEBUG_AUTH: Showing Google picker');
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      // Ensure we are calling the correct method on the instance
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
       print('DEBUG_AUTH: googleUser = $googleUser');
       if (googleUser == null) {
         print('DEBUG_AUTH: User cancelled sign-in');
@@ -23,11 +27,16 @@ class AuthService extends ChangeNotifier {
 
       print('DEBUG_AUTH: Getting auth tokens');
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      print('DEBUG_AUTH: accessToken = ${googleAuth.accessToken != null ? 'present' : 'null'}');
+
+      // Correctly access tokens for Firebase credential
+      final String? accessToken = googleAuth.accessToken;
+      final String? idToken = googleAuth.idToken;
+
+      print('DEBUG_AUTH: tokens = ${accessToken != null ? 'access_ok' : 'access_null'}, ${idToken != null ? 'id_ok' : 'id_null'}');
 
       final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
+        accessToken: accessToken,
+        idToken: idToken,
       );
 
       print('DEBUG_AUTH: Signing in to Firebase');
@@ -70,7 +79,7 @@ class AuthService extends ChangeNotifier {
 
   Future<void> signOut() async {
     await _auth.signOut();
-    await GoogleSignIn().signOut();
+    await _googleSignIn.signOut();
     notifyListeners();
   }
 }

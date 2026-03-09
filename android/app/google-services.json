@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "868512832982",
+    "firebase_url": "https://construction-agents-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "construction-agents",
+    "storage_bucket": "construction-agents.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868512832982:android:7c8e4e30ca35a141c71877",
+        "android_client_info": {
+          "package_name": "com.example.patchworks"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "868512832982-tcpg4jllp7d6g6gojft0oq8t3g0ld2g4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.patchworks",
+            "certificate_hash": "f95095e28a6afd1847a5baa4d834cd2f5331fa73"
+          }
+        },
+        {
+          "client_id": "868512832982-greilgo7b8tqeo2s202ufubd4i5lbfm4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWjNqaBJfISUMgyGYZX93XoqBbpB5Y9JA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "868512832982-greilgo7b8tqeo2s202ufubd4i5lbfm4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

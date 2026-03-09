@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>OAuth Code Example</title>
+  </head>
+  <body>
+    <h2>OAuth Authorization Code Example</h2>
+    <p>
+      Click the link below to start the OAuth consent flow. After consenting,
+      Google will redirect to the configured redirect URI with a <code>?code=</code>
+      query parameter.
+    </p>
+    <a id="authLink" href="#">Sign in with Google (get code)</a>
+    <script>
+      const clientId = '868512832982-greilgo7b8tqeo2s202ufubd4i5lbfm4.apps.googleusercontent.com';
+      const redirectUri = 'https://construction-agents.firebaseapp.com/__/auth/handler';
+      const scope = encodeURIComponent('openid email https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file');
+
+      const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&response_type=code&scope=${scope}&redirect_uri=${encodeURIComponent(redirectUri)}&access_type=offline&prompt=consent`;
+      document.getElementById('authLink').href = url;
+    </script>
+    <p>
+      After redirect, copy the <code>code</code> query value and use
+      <code>client_examples/exchange_code_example.js</code> to POST it to your
+      Cloud Function: <code>/exchange_oauth_code</code>.
+    </p>
+  </body>
+</html>

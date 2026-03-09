@@ -39,7 +39,9 @@ class _AgentChatScreenState extends State<AgentChatScreen> {
       });
 
       setState(() {
-        _messages.add('${widget.agentId.capitalize()}: ${result.data['reply'] ?? 'No reply'}');
+        final reply = result.data['reply'] ?? 'No reply';
+        const disclaimer = '\n\n*Note: AI generated advice. Trust but Verify.*';
+        _messages.add('${widget.agentId.capitalize()}: $reply$disclaimer');
         _isLoading = false;
       });
     } catch (e) {

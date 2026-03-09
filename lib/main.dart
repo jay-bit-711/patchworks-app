@@ -16,12 +16,15 @@ import 'package:firebase_app_check/firebase_app_check.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   await FirebaseAppCheck.instance.activate(
     androidProvider: AndroidProvider.debug,
   );
+
   runApp(
     MultiProvider(
       providers: [
@@ -33,9 +36,19 @@ Future<void> main() async {
     ),
   );
 }
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Patchworks',
-      theme: ThemeData(primarySwatch: Colors.orange),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.orange,
+        useMaterial3: true,
+      ),
       home: const SplashScreen(),
       routes: {
         '/login': (_) => const RoleLoginScreen(),

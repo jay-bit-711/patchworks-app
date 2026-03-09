@@ -12,3 +12,12 @@ frontend/.dart_tool/
 frontend/build/
 frontend/.idea/
 frontend/.packages
+.env
+*.log
+build/
+.dart_tool/
+.flutter-plugins*
+__pycache__/
+*.pyc
+venv/
+firestore-debug.log
