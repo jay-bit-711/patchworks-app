@@ -8,9 +8,22 @@ except ModuleNotFoundError:
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Local Firebase defaults for development.
+if not os.getenv("FIREBASE_CREDENTIALS_PATH"):
+    default_firebase_path = BASE_DIR / "service-account.json"
+    if default_firebase_path.exists():
+        os.environ["FIREBASE_CREDENTIALS_PATH"] = str(default_firebase_path)
+if not os.getenv("ENABLE_FIREBASE_STORAGE"):
+    os.environ["ENABLE_FIREBASE_STORAGE"] = "1"
+
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-key-change-me")
 DEBUG = os.getenv("DJANGO_DEBUG", "1") == "1"
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost,.herokuapp.com,patchworks.in,www.patchworks.in").split(",")
+ALLOWED_HOSTS = os.getenv(
+    "DJANGO_ALLOWED_HOSTS",
+    "127.0.0.1,localhost,192.168.1.38,192.168.1.50,10.13.36.36,.herokuapp.com,patchworks.in,www.patchworks.in",
+).split(",")
+if DEBUG and "*" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append("*")
 
 INSTALLED_APPS = [
     "django.contrib.admin",

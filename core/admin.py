@@ -1,11 +1,11 @@
 # core/admin.py
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.utils.html import format_html
 from .models import User, Job, Evidence, Rating  # ← Add Rating here!
 # core/admin.py (add this class and update registration)
 
 from .forms import EvidenceAdminForm
-from django.utils.html import mark_safe
 
 
 class CustomUserAdmin(UserAdmin):
@@ -25,19 +25,44 @@ admin.site.register(Rating)  # Now it knows what Rating is
 @admin.register(Evidence)
 class EvidenceAdmin(admin.ModelAdmin):
     form = EvidenceAdminForm
-    list_display = ('job', 'is_before', 'timestamp', 'file_link', 'file_size_display', 'file_url')
+    list_display = ('job', 'is_before', 'timestamp', 'file_link', 'preview_link', 'file_size_display')
     list_filter = ('is_before', 'job__status')
-    readonly_fields = ('file_size', 'timestamp', 'file_url')
+    readonly_fields = ('file_size', 'timestamp', 'file_url_display')
 
     def save_model(self, request, obj, form, change):
         if 'file' in form.changed_data and form.cleaned_data.get('file'):
             obj._temp_content_type = form.cleaned_data['file'].content_type
         super().save_model(request, obj, form, change)
+
     def file_link(self, obj):
         if obj.file:
-            return mark_safe(f'<a href="{obj.file.url}" target="_blank">{obj.file.name}</a>')
+            return format_html(
+                '<a href="{}" target="_blank" rel="noopener noreferrer">{}</a>',
+                obj.file.url,
+                obj.file.name,
+            )
         return "-"
     file_link.short_description = "File"
+
+    @admin.display(description="File URL (opens in new tab)")
+    def file_url_display(self, obj):
+        if not obj.file_url:
+            return "No file"
+        label = (obj.file.name.rsplit("/", 1)[-1] if obj.file else obj.file_url.rsplit("/", 1)[-1]) or "View file"
+        return format_html(
+            '<a href="{}" target="_blank" rel="noopener noreferrer">{}</a>',
+            obj.file_url,
+            label,
+        )
+
+    @admin.display(description="View file")
+    def preview_link(self, obj):
+        if not obj.file_url:
+            return "-"
+        return format_html(
+            '<a href="{}" target="_blank" rel="noopener noreferrer">View file</a>',
+            obj.file_url,
+        )
 
     def file_size_display(self, obj):
         if obj.file_size:

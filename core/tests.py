@@ -11,7 +11,7 @@ User = get_user_model()
 class PatchworksApiTests(APITestCase):
     def setUp(self):
         self.homeowner = User.objects.create_user(username="home1", password="pass", role="homeowner")
-        self.mestri = User.objects.create_user(username="mestri1", password="pass", role="mestri")
+        self.builder = User.objects.create_user(username="builder1", password="pass", role="builder")
         self.admin = User.objects.create_user(username="admin1", password="pass", role="admin")
         self.superadmin = User.objects.create_user(username="sa1", password="pass", role="superadmin")
 
@@ -63,31 +63,31 @@ class PatchworksApiTests(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_mestri_accept_job(self):
+    def test_builder_accept_job(self):
         job = Job.objects.create(user=self.homeowner, description="Tap fix", location="Madhapur")
-        self.client.force_authenticate(self.mestri)
+        self.client.force_authenticate(self.builder)
         response = self.client.post(f"/api/jobs/{job.id}/accept/")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         job.refresh_from_db()
-        self.assertEqual(job.assigned_mestri_id, self.mestri.id)
-        self.assertEqual(job.status, "in_progress")
+        self.assertIsNone(job.assigned_mestri_id)
+        self.assertEqual(job.status, "created")
 
     def test_only_admin_can_upgrade_role(self):
         self.client.force_authenticate(self.homeowner)
-        response = self.client.post(f"/api/admin/users/{self.mestri.id}/upgrade/", {"role": "admin"}, format="json")
+        response = self.client.post(f"/api/admin/users/{self.builder.id}/upgrade/", {"role": "admin"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         self.client.force_authenticate(self.admin)
         response = self.client.post(
-            f"/api/admin/users/{self.homeowner.id}/upgrade/", {"role": "mestri"}, format="json"
+            f"/api/admin/users/{self.homeowner.id}/upgrade/", {"role": "builder"}, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_rating_only_after_done(self):
         job = Job.objects.create(
             user=self.homeowner,
-            assigned_mestri=self.mestri,
-            status="in_progress",
+            assigned_mestri=self.builder,
+            status="assigned",
             description="AC leak",
             location="Gachibowli",
         )
@@ -110,7 +110,7 @@ class PatchworksApiTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["rating"], "like")
 
-        self.client.force_authenticate(self.mestri)
+        self.client.force_authenticate(self.builder)
         response = self.client.post(
             f"/api/jobs/{job.id}/rate/",
             {"rating": "dislike", "comments": "Owner unavailable"},
@@ -120,9 +120,9 @@ class PatchworksApiTests(APITestCase):
         self.assertEqual(response.data["rating"], "dislike")
 
     def test_evidence_upload_endpoint(self):
-        job = Job.objects.create(user=self.homeowner, assigned_mestri=self.mestri, description="Door repair", location="Kondapur")
+        job = Job.objects.create(user=self.homeowner, assigned_mestri=self.builder, description="Door repair", location="Kondapur")
 
-        self.client.force_authenticate(self.mestri)
+        self.client.force_authenticate(self.builder)
         file_obj = SimpleUploadedFile("door.jpg", b"x" * 1024, content_type="image/jpeg")
         response = self.client.post(
             "/api/evidence/upload/",

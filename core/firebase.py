@@ -14,9 +14,16 @@ def _init_app():
     if firebase_admin._apps:
         return firebase_admin.get_app()
     if not os.path.exists(SERVICE_ACCOUNT_PATH):
+        print(f"[firebase] service account not found at: {SERVICE_ACCOUNT_PATH}")
         return None
-    cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
-    return firebase_admin.initialize_app(cred, {"storageBucket": STORAGE_BUCKET})
+    try:
+        cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
+        app = firebase_admin.initialize_app(cred, {"storageBucket": STORAGE_BUCKET})
+        print(f"[firebase] initialized app with bucket: {STORAGE_BUCKET}")
+        return app
+    except Exception as exc:
+        print(f"[firebase] initialize_app failed: {exc}")
+        return None
 
 
 def verify_id_token(id_token: str) -> dict:
@@ -30,9 +37,18 @@ def verify_id_token(id_token: str) -> dict:
 
 
 def get_bucket() -> Optional[storage.bucket]:
-    if os.getenv("ENABLE_FIREBASE_STORAGE", "0") != "1":
+    enabled_raw = os.getenv("ENABLE_FIREBASE_STORAGE")
+    if enabled_raw is not None and enabled_raw.strip().lower() in {"0", "false", "no", "off"}:
+        print("[firebase] storage disabled by ENABLE_FIREBASE_STORAGE")
         return None
     app = _init_app()
     if app is None:
+        print("[firebase] bucket unavailable because app initialization failed")
         return None
-    return storage.bucket(app=app)
+    try:
+        bucket = storage.bucket(app=app)
+        print(f"[firebase] using bucket: {bucket.name}")
+        return bucket
+    except Exception as exc:
+        print(f"[firebase] failed to get bucket: {exc}")
+        return None

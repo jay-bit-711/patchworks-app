@@ -1,69 +1,20 @@
-# Patchworks MVP
+# Patchworks
 
-Patchworks is a Hyderabad-focused home repair app MVP with role-based access for Home Owner, Mestri/Plumber, Admin, and Super Admin.
+## Java 21 Fix (Firebase Emulators)
 
-## Stack
-- Backend: Django + DRF + Firebase auth/storage hooks
-- Frontend: Flutter (Android-first, iOS-ready)
-- Auth: Google SSO via Firebase
-- Storage: Firebase Storage (opt-in from backend)
-- Payments: Razorpay test mode placeholder (future UPI phase)
+Run the following commands if `firebase emulators:start` fails with Java <21:
 
-## Backend setup
 ```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py runserver
+brew install openjdk@21
+echo 'export PATH="/opt/homebrew/opt/openjdk@21/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+java -version
 ```
 
-## Backend env
-- `DJANGO_SECRET_KEY`
-- `DJANGO_DEBUG` (`1` local, `0` prod)
-- `DJANGO_ALLOWED_HOSTS` (comma-separated)
-- `DATABASE_URL` (Heroku Postgres)
-- `FIREBASE_CREDENTIALS_PATH` (path to service account json)
-- `FIREBASE_STORAGE_BUCKET` (`patchworks-3178f.firebasestorage.app`)
-- `ENABLE_FIREBASE_STORAGE` (`1` to upload files to Firebase, `0` for local/test)
+## Fix ApiException 10 (Google Sign-In)
 
-## API routes
-- `GET /api/auth/sync/`
-- `GET,POST /api/jobs/`
-- `PATCH /api/jobs/{id}/`
-- `POST /api/jobs/{id}/accept/`
-- `POST /api/jobs/{id}/assign/` (admin/superadmin)
-- `GET,POST /api/jobs/{id}/evidences/`
-- `POST /api/evidence/upload/`
-- `POST /api/jobs/{id}/rate/`
-- `GET /api/admin/users/`
-- `POST /api/admin/users/{id}/upgrade/`
+ApiException 10 fixed with SHA1 F9:50:95:E2:8A:6A:FD:18:47:A5:BA:A4:D8:34:CD:2F:53:31:FA:73 and SHA256 2A:36:05:2A:A5:2D:B8:A6:A0:CB:BA:76:47:23:4E:F1:6F:2B:6B:EE:97:C3:14:A4:27:51:1A:80:CA:EC:68:51 added to console.firebase.google.com/project/construction-agents/settings/general/android-apps > SHA fingerprints, new google-services.json downloaded to android/app, rebuild.
 
-## Guards implemented
-- Max 8 jobs per home owner
-- Max 2 evidences per job
-- Max 50MB per evidence
-- Role-based access for job actions and user upgrades
-- Ratings only when job status is `done` (owner and mestri can both rate)
+## Rebuild Test
 
-## Flutter app
-See `/frontend/README.md`.
-
-## Heroku deploy
-```bash
-heroku create patchworks-app
-heroku addons:create heroku-postgresql:mini
-heroku config:set DJANGO_DEBUG=0
-heroku config:set DJANGO_SECRET_KEY=<secure>
-heroku config:set DJANGO_ALLOWED_HOSTS=patchworks.in,www.patchworks.in,<app>.herokuapp.com
-heroku config:set ENABLE_FIREBASE_STORAGE=1
-heroku config:set FIREBASE_STORAGE_BUCKET=patchworks-3178f.firebasestorage.app
-git push heroku main
-heroku run python manage.py migrate
-```
-
-## Tests
-```bash
-./venv/bin/python manage.py test core.tests.PatchworksApiTests
-```
+Rebuild test: copy new google-services.json to android/app; flutter clean; flutter pub get; flutter build apk --release --target-platform android-arm64; adb install build/app/outputs/flutter-apk/app-release.apk
