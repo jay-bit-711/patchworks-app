@@ -2,10 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
+import '../models/job.dart';
+import '../widgets/job_card.dart';
 import 'agent_chat_screen.dart';
-import 'job_create_screen.dart';
-import 'evidence_capture_screen.dart';
 import 'project_dashboard_screen.dart';
+import 'store_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,59 +17,151 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-
-  // List of screens for BottomNavigationBar
-  late final List<Widget> _pages;
-
-  @override
-  void initState() {
-    super.initState();
-    _pages = [
-      const HomeDashboard(),
-      const AgentChatScreen(agentId: 'material'),
-      const ProjectDashboardScreen(),
-    ];
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
+    final auth = Provider.of<AuthService>(context);
+    final role = auth.userRole;
+    final user = auth.currentUser;
+
+    final List<Widget> pages = _getPagesForRole(role);
+
     return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: const Color(0xFF0D1117),
+      drawer: _buildDrawer(context, auth, user),
       body: IndexedStack(
         index: _selectedIndex,
-        children: _pages,
+        children: pages,
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF161B22),
         currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        onTap: (index) => setState(() => _selectedIndex = index),
         selectedItemColor: Colors.orange,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+        unselectedItemColor: Colors.white30,
+        type: BottomNavigationBarType.fixed,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        selectedFontSize: 12,
+        unselectedFontSize: 12,
+        items: _getNavItemsForRole(role),
+      ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context, AuthService auth, dynamic user) {
+    return Drawer(
+      backgroundColor: const Color(0xFF161B22),
+      child: Column(
+        children: [
+          UserAccountsDrawerHeader(
+            decoration: const BoxDecoration(color: Color(0xFF0D1117)),
+            currentAccountPicture: const CircleAvatar(
+              backgroundColor: Colors.orange,
+              child: Icon(Icons.person, size: 40, color: Colors.white),
+            ),
+            accountName: Text(user?.displayName ?? 'User Name', 
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+            accountEmail: Text(user?.email ?? 'email@example.com', 
+              style: const TextStyle(color: Colors.white54)),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.inventory),
-            label: 'Materials',
+          ListTile(
+            leading: const Icon(Icons.phone, color: Colors.orange),
+            title: const Text('Phone', style: TextStyle(color: Colors.white70)),
+            subtitle: const Text('+91 9876543210', style: TextStyle(color: Colors.white38)),
+            trailing: const Icon(Icons.edit, size: 16, color: Colors.white24),
+            onTap: () {},
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+          ListTile(
+            leading: const Icon(Icons.location_on, color: Colors.orange),
+            title: const Text('Address', style: TextStyle(color: Colors.white70)),
+            subtitle: const Text('Gachibowli, Hyderabad', style: TextStyle(color: Colors.white38)),
+            trailing: const Icon(Icons.edit, size: 16, color: Colors.white24),
+            onTap: () {},
           ),
+          const Divider(color: Colors.white10),
+          ListTile(
+            leading: const Icon(Icons.video_library, color: Colors.orange),
+            title: const Text('Video Player', style: TextStyle(color: Colors.white70)),
+            onTap: () {},
+          ),
+          const Spacer(),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.redAccent),
+            title: const Text('Logout', style: TextStyle(color: Colors.redAccent)),
+            onTap: () async {
+              await auth.signOut();
+              if (context.mounted) Navigator.pushReplacementNamed(context, '/login');
+            },
+          ),
+          const SizedBox(height: 20),
         ],
       ),
     );
   }
+
+  List<Widget> _getPagesForRole(String? role) {
+    switch (role) {
+      case 'homeowner':
+        return [
+          UnifiedJobsView(role: 'homeowner', title: 'My Home Projects', scaffoldKey: _scaffoldKey),
+          const StoreScreen(),
+          const AgentChatScreen(agentId: 'customer_care'),
+        ];
+      case 'pro':
+        return [
+          UnifiedJobsView(role: 'pro', title: 'My Tasks', scaffoldKey: _scaffoldKey),
+          const StoreScreen(),
+          const ProfileStub(),
+        ];
+      case 'supervisor':
+      default:
+        return [
+          const ProjectDashboardScreen(), // This screen should also take the scaffoldKey if it needs to open the drawer
+          const StoreScreen(),
+          const AgentChatScreen(agentId: 'assignment_agent'),
+        ];
+    }
+  }
+
+  List<BottomNavigationBarItem> _getNavItemsForRole(String? role) {
+    switch (role) {
+      case 'homeowner':
+        return const [
+          BottomNavigationBarItem(icon: Icon(Icons.home_work), label: 'My Jobs'),
+          BottomNavigationBarItem(icon: Icon(Icons.storefront), label: 'Store'),
+          BottomNavigationBarItem(icon: Icon(Icons.support_agent), label: 'Support'),
+        ];
+      case 'pro':
+        return const [
+          BottomNavigationBarItem(icon: Icon(Icons.task_alt), label: 'My Tasks'),
+          BottomNavigationBarItem(icon: Icon(Icons.shopping_basket), label: 'Store'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        ];
+      default:
+        return const [
+          BottomNavigationBarItem(icon: Icon(Icons.dashboard_customize), label: 'Dashboard'),
+          BottomNavigationBarItem(icon: Icon(Icons.storefront), label: 'Store'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_search), label: 'Assignment'),
+        ];
+    }
+  }
 }
 
-class HomeDashboard extends StatelessWidget {
-  const HomeDashboard({super.key});
+class UnifiedJobsView extends StatefulWidget {
+  final String role;
+  final String title;
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  const UnifiedJobsView({super.key, required this.role, required this.title, required this.scaffoldKey});
+
+  @override
+  State<UnifiedJobsView> createState() => _UnifiedJobsViewState();
+}
+
+class _UnifiedJobsViewState extends State<UnifiedJobsView> {
+  String selectedFilter = 'All';
 
   @override
   Widget build(BuildContext context) {
@@ -76,204 +169,140 @@ class HomeDashboard extends StatelessWidget {
     final user = auth.currentUser;
 
     return Scaffold(
+      backgroundColor: const Color(0xFF0D1117),
       appBar: AppBar(
-        title: const Text('Patchworks'),
-        backgroundColor: Colors.orange,
+        backgroundColor: const Color(0xFF161B22),
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await auth.signOut();
-              if (context.mounted) {
-                Navigator.pushReplacementNamed(context, '/login');
-              }
-            },
+        leading: IconButton(
+          icon: const Icon(Icons.menu, color: Colors.white),
+          onPressed: () => widget.scaffoldKey.currentState?.openDrawer(),
+        ),
+        title: Text(widget.title, style: const TextStyle(color: Colors.white, fontSize: 18)),
+      ),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              // Filter Section
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: ['All', 'Active', 'Completed', 'Quotes']
+                        .map((f) => _buildFilterChip(f))
+                        .toList(),
+                  ),
+                ),
+              ),
+              
+              Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('jobs')
+                      .where(widget.role == 'homeowner' ? 'homeownerId' : 'assignedWorkerId', isEqualTo: user?.uid)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return _buildMockList();
+                    }
+
+                    final jobs = snapshot.data!.docs.map((d) => Job.fromFirestore(d)).toList();
+                    return ListView.builder(
+                      padding: const EdgeInsets.only(bottom: 100), // Space for FAB
+                      itemCount: jobs.length,
+                      itemBuilder: (context, index) => JobCard(
+                        job: jobs[index],
+                        onTap: () => Navigator.pushNamed(context, '/jobs/detail', arguments: jobs[index].id),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+          
+          // Agent Vijay as a Floating Construction Worker Emoji
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: FloatingActionButton(
+              backgroundColor: Colors.orange,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AgentChatScreen(agentId: 'vijay')),
+                );
+              },
+              child: const Text('👷', style: TextStyle(fontSize: 30)),
+            ),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Welcome Header
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: const BoxDecoration(
-                color: Colors.orange,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Hello, ${user?.displayName?.split(' ')[0] ?? 'Builder'}!',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Building Better, Piece by Piece.',
-                    style: TextStyle(color: Colors.white70, fontSize: 16),
-                  ),
-                  const SizedBox(height: 20),
-                  // Small Entry for Agent Vijay
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AgentChatScreen(agentId: 'vijay'),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Colors.white30),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Icon(Icons.auto_awesome, color: Colors.white, size: 20),
-                          SizedBox(width: 8),
-                          Text(
-                            'Ask Vijay for advice...',
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+    );
+  }
 
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Quick Actions',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      _buildActionCard(
-                        context,
-                        'New Job',
-                        Icons.add_task,
-                        () => Navigator.pushNamed(context, '/jobs/create'),
-                      ),
-                      const SizedBox(width: 16),
-                      _buildActionCard(
-                        context,
-                        'Evidence',
-                        Icons.camera_alt,
-                        () => Navigator.pushNamed(context, '/evidence/capture'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  
-                  // Conditional Section for DocuTracker
-                  StreamBuilder<DocumentSnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(user?.uid)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) return const SizedBox.shrink();
-                      
-                      final data = snapshot.data!.data() as Map<String, dynamic>?;
-                      final isDealFinalized = data?['dealStatus'] == 'finalized';
-                      
-                      // Also check for evidence existence in a real scenario
-                      if (!isDealFinalized) return const SizedBox.shrink();
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Documentation',
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 16),
-                          Card(
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                              leading: const CircleAvatar(
-                                backgroundColor: Colors.blueAccent,
-                                child: Icon(Icons.description, color: Colors.white),
-                              ),
-                              title: const Text('DocuTracker Active'),
-                              subtitle: const Text('Access your finalized plans and invoices'),
-                              trailing: const Icon(Icons.chevron_right),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const AgentChatScreen(agentId: 'document_tracker'),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
+  Widget _buildFilterChip(String label) {
+    final isSelected = selectedFilter == label;
+    return GestureDetector(
+      onTap: () => setState(() => selectedFilter = label),
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.orange.withOpacity(0.2) : const Color(0xFF161B22),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: isSelected ? Colors.orange : Colors.white10),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(color: isSelected ? Colors.orange : Colors.white60, fontSize: 12),
         ),
       ),
     );
   }
 
-  Widget _buildActionCard(BuildContext context, String title, IconData icon, VoidCallback onTap) {
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
-                spreadRadius: 2,
-                blurRadius: 10,
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Icon(icon, color: Colors.orange, size: 32),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
+  Widget _buildMockList() {
+    // 7-8 dummy jobs to show layout handling and "pagination" (scrolling)
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 100),
+      children: List.generate(8, (index) => JobCard(
+        job: Job(
+          id: 'mock$index',
+          title: [
+            'Living Room Painting',
+            'Kitchen Tap Leakage',
+            'Slab Sentring Slab',
+            'Full House Wiring',
+            'Footing Reinforcement',
+            'Wall Plastering',
+            'Wardrobe Carpentry',
+            'Tank Connection'
+          ][index],
+          description: 'High quality construction work.',
+          dateTime: DateTime.now().subtract(Duration(days: index)),
+          quoteStatus: index % 2 == 0 ? '₹${4500 + index * 1000} Quote Received' : 'Assigned',
+          materialsIncluded: index % 3 == 0,
+          status: index % 2 == 0 ? JobStatus.created : JobStatus.assigned,
+          jobNumber: 100 + index,
+          locationHash: 'hyd_${index + 1}',
+          homeownerId: 'user123',
         ),
-      ),
+        onTap: () {},
+      )),
+    );
+  }
+}
+
+class ProfileStub extends StatelessWidget {
+  const ProfileStub({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0D1117),
+      appBar: AppBar(title: const Text('Profile'), backgroundColor: const Color(0xFF161B22)),
+      body: const Center(child: Text('User Profile & Skills', style: TextStyle(color: Colors.white))),
     );
   }
 }

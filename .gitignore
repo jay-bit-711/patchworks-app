@@ -21,3 +21,12 @@ __pycache__/
 *.pyc
 venv/
 firestore-debug.log
+# Ignore built APKs and large binaries
+app-debug.apk
+*.apk
+emulator/ # or whatever folder contains them
+# Ignore built APKs and large binaries
+app-debug.apk
+*.apk
+emulator/
+build/

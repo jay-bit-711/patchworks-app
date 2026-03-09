@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import '../services/auth_service.dart';
 
 class ProjectDashboardScreen extends StatefulWidget {
   const ProjectDashboardScreen({super.key});
@@ -13,6 +15,8 @@ class _ProjectDashboardScreenState extends State<ProjectDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final auth = Provider.of<AuthService>(context, listen: false);
+    
     return Scaffold(
       backgroundColor: const Color(0xFF0D1117), 
       appBar: AppBar(
@@ -23,9 +27,15 @@ class _ProjectDashboardScreenState extends State<ProjectDashboardScreen> {
           'Supervisor Dashboard',
           style: TextStyle(color: Colors.white, fontSize: 18),
         ),
-        actions: const [
-          Icon(Icons.language, color: Colors.white),
-          SizedBox(width: 16),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white70),
+            onPressed: () async {
+              await auth.signOut();
+              if (context.mounted) Navigator.pushReplacementNamed(context, '/login');
+            },
+          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: Stack(

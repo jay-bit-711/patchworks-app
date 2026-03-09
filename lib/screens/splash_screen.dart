@@ -19,7 +19,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkAuth() async {
-    // Artificial delay for branding
     await Future.delayed(const Duration(seconds: 2));
     
     if (!mounted) return;
@@ -28,35 +27,31 @@ class _SplashScreenState extends State<SplashScreen> {
     final user = auth.currentUser;
 
     if (user != null) {
-      // User is logged in, check their role in Firestore
       try {
         final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
         if (doc.exists && doc.data()?['role'] != null) {
-          // Role exists, go to home
           Navigator.pushReplacementNamed(context, '/home');
         } else {
-          // No role set, go to role selection
           Navigator.pushReplacementNamed(context, '/login');
         }
       } catch (e) {
-        print('Error fetching user role: $e');
         Navigator.pushReplacementNamed(context, '/login');
       }
     } else {
-      // Not logged in, go to login
-      Navigator.pushReplacementNamed(context, '/login');
+      // New users go to Pre-Login Onboarding
+      Navigator.pushReplacementNamed(context, '/onboarding');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.orange,
+      backgroundColor: const Color(0xFF0D1117),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
-            Icon(Icons.construction, size: 100, color: Colors.white),
+            Icon(Icons.construction, size: 100, color: Colors.orange),
             SizedBox(height: 20),
             Text(
               'Patchworks',
@@ -76,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
             SizedBox(height: 40),
-            CircularProgressIndicator(color: Colors.white),
+            CircularProgressIndicator(color: Colors.orange),
           ],
         ),
       ),
