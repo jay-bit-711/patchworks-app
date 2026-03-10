@@ -2,6 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum JobStatus { created, assigned, inProgress, completed, disputed }
 
+class JobEvidence {
+  final String url;
+  final String type; // 'image' or 'video'
+
+  JobEvidence({required this.url, required this.type});
+}
+
 class Job {
   final String id;
   final String title;
@@ -12,11 +19,12 @@ class Job {
   final JobStatus status;
   final String? imageUrl;
   final int jobNumber;
-  final String locationHash; // For geofencing/privacy
+  final String locationHash; 
   final String homeownerId;
   final String? assignedWorkerId;
   final double? latitude;
   final double? longitude;
+  final List<JobEvidence> evidence;
 
   Job({
     required this.id,
@@ -33,10 +41,16 @@ class Job {
     this.assignedWorkerId,
     this.latitude,
     this.longitude,
+    this.evidence = const [],
   });
 
   factory Job.fromFirestore(DocumentSnapshot doc) {
     Map data = doc.data() as Map<String, dynamic>;
+    
+    var evidenceList = (data['evidence'] as List? ?? []).map((e) {
+      return JobEvidence(url: e['url'], type: e['type']);
+    }).toList();
+
     return Job(
       id: doc.id,
       title: data['title'] ?? '',
@@ -52,6 +66,7 @@ class Job {
       assignedWorkerId: data['assignedWorkerId'],
       latitude: data['latitude'],
       longitude: data['longitude'],
+      evidence: evidenceList,
     );
   }
 }

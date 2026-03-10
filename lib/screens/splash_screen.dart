@@ -11,15 +11,40 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
+
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
+    );
+
+    _controller.forward();
     _checkAuth();
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   Future<void> _checkAuth() async {
-    await Future.delayed(const Duration(seconds: 2));
+    // Wait for animation and a bit more
+    await Future.delayed(const Duration(milliseconds: 2500));
     
     if (!mounted) return;
     
@@ -38,7 +63,6 @@ class _SplashScreenState extends State<SplashScreen> {
         Navigator.pushReplacementNamed(context, '/login');
       }
     } else {
-      // New users go to Pre-Login Onboarding
       Navigator.pushReplacementNamed(context, '/onboarding');
     }
   }
@@ -48,31 +72,55 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF0D1117),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.construction, size: 100, color: Colors.orange),
-            SizedBox(height: 20),
-            Text(
-              'Patchworks',
-              style: TextStyle(
-                fontSize: 40, 
-                color: Colors.white, 
-                fontWeight: FontWeight.bold
-              ),
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: ScaleTransition(
+            scale: _scaleAnimation,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Logo Placeholder - Using Icon until actual image is linked
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.orange.withOpacity(0.3), width: 2),
+                  ),
+                  child: const Icon(Icons.construction, size: 80, color: Colors.orange),
+                ),
+                const SizedBox(height: 30),
+                const Text(
+                  'PATCHWORKS',
+                  style: TextStyle(
+                    fontSize: 36, 
+                    color: Colors.white, 
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 4,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Trust but Verify',
+                  style: TextStyle(
+                    fontSize: 16, 
+                    color: Colors.orange, 
+                    fontStyle: FontStyle.italic,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 60),
+                const SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: CircularProgressIndicator(
+                    color: Colors.orange,
+                    strokeWidth: 2,
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 10),
-            Text(
-              'Trust but Verify',
-              style: TextStyle(
-                fontSize: 16, 
-                color: Colors.white70, 
-                fontStyle: FontStyle.italic
-              ),
-            ),
-            SizedBox(height: 40),
-            CircularProgressIndicator(color: Colors.orange),
-          ],
+          ),
         ),
       ),
     );

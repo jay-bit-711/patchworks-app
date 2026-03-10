@@ -7,6 +7,8 @@ import '../widgets/job_card.dart';
 import 'agent_chat_screen.dart';
 import 'project_dashboard_screen.dart';
 import 'store_screen.dart';
+import 'job_detail_screen.dart';
+import 'job_create_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -70,21 +72,21 @@ class _HomeScreenState extends State<HomeScreen> {
           ListTile(
             leading: const Icon(Icons.phone, color: Colors.orange),
             title: const Text('Phone', style: TextStyle(color: Colors.white70)),
-            subtitle: const Text('+91 9876543210', style: TextStyle(color: Colors.white38)),
+            subtitle: const Text('+91 9441828722', style: TextStyle(color: Colors.white38)),
             trailing: const Icon(Icons.edit, size: 16, color: Colors.white24),
             onTap: () {},
           ),
           ListTile(
             leading: const Icon(Icons.location_on, color: Colors.orange),
             title: const Text('Address', style: TextStyle(color: Colors.white70)),
-            subtitle: const Text('Gachibowli, Hyderabad', style: TextStyle(color: Colors.white38)),
+            subtitle: const Text('Patancheru, Hyderabad', style: TextStyle(color: Colors.white38)),
             trailing: const Icon(Icons.edit, size: 16, color: Colors.white24),
             onTap: () {},
           ),
           const Divider(color: Colors.white10),
           ListTile(
-            leading: const Icon(Icons.video_library, color: Colors.orange),
-            title: const Text('Video Player', style: TextStyle(color: Colors.white70)),
+            leading: const Icon(Icons.history, color: Colors.orange),
+            title: const Text('Payment History', style: TextStyle(color: Colors.white70)),
             onTap: () {},
           ),
           const Spacer(),
@@ -106,20 +108,20 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (role) {
       case 'homeowner':
         return [
-          UnifiedJobsView(role: 'homeowner', title: 'My Home Projects', scaffoldKey: _scaffoldKey),
+          UnifiedJobsView(role: 'homeowner', title: 'My Jobs', scaffoldKey: _scaffoldKey),
           const StoreScreen(),
           const AgentChatScreen(agentId: 'customer_care'),
         ];
       case 'pro':
         return [
-          UnifiedJobsView(role: 'pro', title: 'My Tasks', scaffoldKey: _scaffoldKey),
+          UnifiedJobsView(role: 'pro', title: 'My Jobs', scaffoldKey: _scaffoldKey),
           const StoreScreen(),
           const ProfileStub(),
         ];
       case 'supervisor':
       default:
         return [
-          const ProjectDashboardScreen(), // This screen should also take the scaffoldKey if it needs to open the drawer
+          const ProjectDashboardScreen(), // Still called Supervisor Dashboard in its own file
           const StoreScreen(),
           const AgentChatScreen(agentId: 'assignment_agent'),
         ];
@@ -136,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ];
       case 'pro':
         return const [
-          BottomNavigationBarItem(icon: Icon(Icons.task_alt), label: 'My Tasks'),
+          BottomNavigationBarItem(icon: Icon(Icons.task_alt), label: 'My Jobs'),
           BottomNavigationBarItem(icon: Icon(Icons.shopping_basket), label: 'Store'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ];
@@ -177,12 +179,33 @@ class _UnifiedJobsViewState extends State<UnifiedJobsView> {
           icon: const Icon(Icons.menu, color: Colors.white),
           onPressed: () => widget.scaffoldKey.currentState?.openDrawer(),
         ),
-        title: Text(widget.title, style: const TextStyle(color: Colors.white, fontSize: 18)),
+        title: Row(
+          children: [
+            Container(
+              height: 32,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(
+                color: Colors.orange,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Center(
+                child: Text(
+                  'PATCHWORKS',
+                  style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(widget.title, style: const TextStyle(color: Colors.white, fontSize: 18)),
+          ],
+        ),
       ),
       body: Stack(
         children: [
           Column(
             children: [
+              if (widget.role == 'homeowner') _buildNewJobPrompt(context),
+              
               // Filter Section
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
@@ -210,11 +233,18 @@ class _UnifiedJobsViewState extends State<UnifiedJobsView> {
 
                     final jobs = snapshot.data!.docs.map((d) => Job.fromFirestore(d)).toList();
                     return ListView.builder(
-                      padding: const EdgeInsets.only(bottom: 100), // Space for FAB
+                      padding: const EdgeInsets.only(bottom: 100), 
                       itemCount: jobs.length,
                       itemBuilder: (context, index) => JobCard(
                         job: jobs[index],
-                        onTap: () => Navigator.pushNamed(context, '/jobs/detail', arguments: jobs[index].id),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => JobDetailScreen(job: jobs[index]),
+                            ),
+                          );
+                        },
                       ),
                     );
                   },
@@ -223,7 +253,6 @@ class _UnifiedJobsViewState extends State<UnifiedJobsView> {
             ],
           ),
           
-          // Agent Vijay as a Floating Construction Worker Emoji
           Positioned(
             bottom: 20,
             right: 20,
@@ -237,6 +266,42 @@ class _UnifiedJobsViewState extends State<UnifiedJobsView> {
               },
               child: const Text('👷', style: TextStyle(fontSize: 30)),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNewJobPrompt(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: [Colors.orange.shade700, Colors.orange.shade400]),
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [BoxShadow(color: Colors.orange.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5))],
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.add_circle_outline, color: Colors.white, size: 40),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text('Start a Project?', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                Text('Post a requirement in seconds', style: TextStyle(color: Colors.white70, fontSize: 12)),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.orange,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () => Navigator.pushNamed(context, '/jobs/create'),
+            child: const Text('NEW JOB'),
           ),
         ],
       ),
@@ -264,11 +329,10 @@ class _UnifiedJobsViewState extends State<UnifiedJobsView> {
   }
 
   Widget _buildMockList() {
-    // 7-8 dummy jobs to show layout handling and "pagination" (scrolling)
     return ListView(
       padding: const EdgeInsets.only(bottom: 100),
-      children: List.generate(8, (index) => JobCard(
-        job: Job(
+      children: List.generate(8, (index) {
+        final job = Job(
           id: 'mock$index',
           title: [
             'Living Room Painting',
@@ -280,7 +344,7 @@ class _UnifiedJobsViewState extends State<UnifiedJobsView> {
             'Wardrobe Carpentry',
             'Tank Connection'
           ][index],
-          description: 'High quality construction work.',
+          description: 'High quality construction work with professional finish.',
           dateTime: DateTime.now().subtract(Duration(days: index)),
           quoteStatus: index % 2 == 0 ? '₹${4500 + index * 1000} Quote Received' : 'Assigned',
           materialsIncluded: index % 3 == 0,
@@ -288,9 +352,21 @@ class _UnifiedJobsViewState extends State<UnifiedJobsView> {
           jobNumber: 100 + index,
           locationHash: 'hyd_${index + 1}',
           homeownerId: 'user123',
-        ),
-        onTap: () {},
-      )),
+          evidence: [
+            JobEvidence(url: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&q=80', type: 'image'),
+            JobEvidence(url: 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4', type: 'video'),
+          ],
+        );
+        return JobCard(
+          job: job,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => JobDetailScreen(job: job)),
+            );
+          },
+        );
+      }),
     );
   }
 }

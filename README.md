@@ -10,6 +10,21 @@
 
 ---
 
+## 🛠 Surgical Cleanup
+The repository has been surgically cleaned to maintain a lean footprint (<50MB). Misplaced Android SDK tools and redundant project copies have been removed to ensure fast load times and a professional developer environment.
+
+## 🏗 "Verified Head" Architecture
+We have digitized individual accountability for every trade lead:
+- **Task-Based Tracking**: A Project is broken into trade-specific Tasks (Masonry, Electrical, Plumbing).
+- **The "Head" Responsibility**: Each Task is assigned to a specific "Head" (Lead Mestri/Plumber).
+- **Mandatory Evidence**: Heads must upload high-quality video/image evidence *before* a task is verified. No evidence = No milestone completion.
+
+## 📈 The Digital Trail
+- **Capacity**: Optimized for ~300-500 evidence files per 18-month project stored securely in Firebase.
+- **Security**: "Trust but Verify" policy enforced by Firebase App Check and granular Firestore rules, protecting project data from unauthorized access.
+
+---
+
 Patchworks is a Flutter-based application designed for construction management and coordination. It leverages Firebase for backend services and provides a suite of tools for job creation, evidence capture, and real-time communication with specialized agents.
 
 ## Key Features

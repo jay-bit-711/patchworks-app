@@ -41,4 +41,3 @@ flutter:
   assets:
     - assets/human_loader.png
     - material.json
-    - assets/onboarding/

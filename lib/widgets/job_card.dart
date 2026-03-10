@@ -79,14 +79,7 @@ class JobCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  'View Details >',
-                  style: TextStyle(color: Colors.orange[300], fontWeight: FontWeight.w500),
-                ),
-              ),
+              // "View Details" removed as the entire card is now clickable
             ],
           ),
         ),
