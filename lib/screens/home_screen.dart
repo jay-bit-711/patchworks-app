@@ -1,101 +1,308 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'agent_chat_screen.dart'; // import the new screen
+import 'package:provider/provider.dart';
+import '../services/auth_service.dart';
+import '../models/job.dart';
+import '../widgets/job_card.dart';
+import 'agent_chat_screen.dart';
+import 'project_dashboard_screen.dart';
+import 'store_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
   Widget build(BuildContext context) {
+    final auth = Provider.of<AuthService>(context);
+    final role = auth.userRole;
+    final user = auth.currentUser;
+
+    final List<Widget> pages = _getPagesForRole(role);
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Patchworks Home'),
-        backgroundColor: Colors.orange,
+      key: _scaffoldKey,
+      backgroundColor: const Color(0xFF0D1117),
+      drawer: _buildDrawer(context, auth, user),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: pages,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF161B22),
+        currentIndex: _selectedIndex,
+        onTap: (index) => setState(() => _selectedIndex = index),
+        selectedItemColor: Colors.orange,
+        unselectedItemColor: Colors.white30,
+        type: BottomNavigationBarType.fixed,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        selectedFontSize: 12,
+        unselectedFontSize: 12,
+        items: _getNavItemsForRole(role),
+      ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context, AuthService auth, dynamic user) {
+    return Drawer(
+      backgroundColor: const Color(0xFF161B22),
+      child: Column(
+        children: [
+          UserAccountsDrawerHeader(
+            decoration: const BoxDecoration(color: Color(0xFF0D1117)),
+            currentAccountPicture: const CircleAvatar(
+              backgroundColor: Colors.orange,
+              child: Icon(Icons.person, size: 40, color: Colors.white),
+            ),
+            accountName: Text(user?.displayName ?? 'User Name', 
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+            accountEmail: Text(user?.email ?? 'email@example.com', 
+              style: const TextStyle(color: Colors.white54)),
+          ),
+          ListTile(
+            leading: const Icon(Icons.phone, color: Colors.orange),
+            title: const Text('Phone', style: TextStyle(color: Colors.white70)),
+            subtitle: const Text('+91 9876543210', style: TextStyle(color: Colors.white38)),
+            trailing: const Icon(Icons.edit, size: 16, color: Colors.white24),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.location_on, color: Colors.orange),
+            title: const Text('Address', style: TextStyle(color: Colors.white70)),
+            subtitle: const Text('Gachibowli, Hyderabad', style: TextStyle(color: Colors.white38)),
+            trailing: const Icon(Icons.edit, size: 16, color: Colors.white24),
+            onTap: () {},
+          ),
+          const Divider(color: Colors.white10),
+          ListTile(
+            leading: const Icon(Icons.video_library, color: Colors.orange),
+            title: const Text('Video Player', style: TextStyle(color: Colors.white70)),
+            onTap: () {},
+          ),
+          const Spacer(),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.redAccent),
+            title: const Text('Logout', style: TextStyle(color: Colors.redAccent)),
+            onTap: () async {
+              await auth.signOut();
+              if (context.mounted) Navigator.pushReplacementNamed(context, '/login');
+            },
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _getPagesForRole(String? role) {
+    switch (role) {
+      case 'homeowner':
+        return [
+          UnifiedJobsView(role: 'homeowner', title: 'My Home Projects', scaffoldKey: _scaffoldKey),
+          const StoreScreen(),
+          const AgentChatScreen(agentId: 'customer_care'),
+        ];
+      case 'pro':
+        return [
+          UnifiedJobsView(role: 'pro', title: 'My Tasks', scaffoldKey: _scaffoldKey),
+          const StoreScreen(),
+          const ProfileStub(),
+        ];
+      case 'supervisor':
+      default:
+        return [
+          const ProjectDashboardScreen(), // This screen should also take the scaffoldKey if it needs to open the drawer
+          const StoreScreen(),
+          const AgentChatScreen(agentId: 'assignment_agent'),
+        ];
+    }
+  }
+
+  List<BottomNavigationBarItem> _getNavItemsForRole(String? role) {
+    switch (role) {
+      case 'homeowner':
+        return const [
+          BottomNavigationBarItem(icon: Icon(Icons.home_work), label: 'My Jobs'),
+          BottomNavigationBarItem(icon: Icon(Icons.storefront), label: 'Store'),
+          BottomNavigationBarItem(icon: Icon(Icons.support_agent), label: 'Support'),
+        ];
+      case 'pro':
+        return const [
+          BottomNavigationBarItem(icon: Icon(Icons.task_alt), label: 'My Tasks'),
+          BottomNavigationBarItem(icon: Icon(Icons.shopping_basket), label: 'Store'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        ];
+      default:
+        return const [
+          BottomNavigationBarItem(icon: Icon(Icons.dashboard_customize), label: 'Dashboard'),
+          BottomNavigationBarItem(icon: Icon(Icons.storefront), label: 'Store'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_search), label: 'Assignment'),
+        ];
+    }
+  }
+}
+
+class UnifiedJobsView extends StatefulWidget {
+  final String role;
+  final String title;
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  const UnifiedJobsView({super.key, required this.role, required this.title, required this.scaffoldKey});
+
+  @override
+  State<UnifiedJobsView> createState() => _UnifiedJobsViewState();
+}
+
+class _UnifiedJobsViewState extends State<UnifiedJobsView> {
+  String selectedFilter = 'All';
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = Provider.of<AuthService>(context, listen: false);
+    final user = auth.currentUser;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFF0D1117),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF161B22),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.menu, color: Colors.white),
+          onPressed: () => widget.scaffoldKey.currentState?.openDrawer(),
+        ),
+        title: Text(widget.title, style: const TextStyle(color: Colors.white, fontSize: 18)),
+      ),
+      body: Stack(
+        children: [
+          Column(
             children: [
-              const Text(
-                'Welcome back!',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              // Filter Section
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: ['All', 'Active', 'Completed', 'Quotes']
+                        .map((f) => _buildFilterChip(f))
+                        .toList(),
+                  ),
+                ),
               ),
-              const SizedBox(height: 32),
-              Card(
-                elevation: 4,
-                child: ListTile(
-                  leading: const Icon(Icons.chat, color: Colors.orange, size: 40),
-                  title: const Text('Chat with Agent Vijay', style: TextStyle(fontSize: 18)),
-                  subtitle: const Text('Get tentative plans, quotes (₹1750–₹3500/sqft), Vastu advice, or discuss your dream house'),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AgentChatScreen(agentId: 'vijay'),
+              
+              Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('jobs')
+                      .where(widget.role == 'homeowner' ? 'homeownerId' : 'assignedWorkerId', isEqualTo: user?.uid)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return _buildMockList();
+                    }
+
+                    final jobs = snapshot.data!.docs.map((d) => Job.fromFirestore(d)).toList();
+                    return ListView.builder(
+                      padding: const EdgeInsets.only(bottom: 100), // Space for FAB
+                      itemCount: jobs.length,
+                      itemBuilder: (context, index) => JobCard(
+                        job: jobs[index],
+                        onTap: () => Navigator.pushNamed(context, '/jobs/detail', arguments: jobs[index].id),
                       ),
                     );
                   },
-                ),
-              ),
-              const SizedBox(height: 16),
-              Card(
-                elevation: 4,
-                child: ListTile(
-                  leading: const Icon(Icons.inventory, color: Colors.orange, size: 40),
-                  title: const Text('Chat with Agent Material', style: TextStyle(fontSize: 18)),
-                  subtitle: const Text('Ask about sand, bricks, steel, wires, concrete quantities & prices'),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AgentChatScreen(agentId: 'material'),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-              Card(
-                elevation: 4,
-                child: ListTile(
-                  leading: const Icon(Icons.description, color: Colors.orange, size: 40),
-                  title: const Text('Chat with Document Tracker', style: TextStyle(fontSize: 18)),
-                  subtitle: const Text('Request invoices, plans, progress photos, WhatsApp updates'),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AgentChatScreen(agentId: 'document_tracker'),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-              ListTile(
-                title: const Text('Create Job'),
-                onTap: () => Navigator.pushNamed(context, '/jobs/create'),
-              ),
-              ListTile(
-                title: const Text('Upload Evidence'),
-                onTap: () => Navigator.pushNamed(context, '/evidence/capture'),
-              ),
-              ListTile(
-                title: const Text('Project Dashboard'),
-                onTap: () => Navigator.pushNamed(context, '/dashboard'),
-              ),
-              const SizedBox(height: 32),
-              const Center(
-                child: Text(
-                  'More features coming soon...',
-                  style: TextStyle(color: Colors.grey),
                 ),
               ),
             ],
           ),
+          
+          // Agent Vijay as a Floating Construction Worker Emoji
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: FloatingActionButton(
+              backgroundColor: Colors.orange,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AgentChatScreen(agentId: 'vijay')),
+                );
+              },
+              child: const Text('👷', style: TextStyle(fontSize: 30)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(String label) {
+    final isSelected = selectedFilter == label;
+    return GestureDetector(
+      onTap: () => setState(() => selectedFilter = label),
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.orange.withOpacity(0.2) : const Color(0xFF161B22),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: isSelected ? Colors.orange : Colors.white10),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(color: isSelected ? Colors.orange : Colors.white60, fontSize: 12),
         ),
       ),
+    );
+  }
+
+  Widget _buildMockList() {
+    // 7-8 dummy jobs to show layout handling and "pagination" (scrolling)
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 100),
+      children: List.generate(8, (index) => JobCard(
+        job: Job(
+          id: 'mock$index',
+          title: [
+            'Living Room Painting',
+            'Kitchen Tap Leakage',
+            'Slab Sentring Slab',
+            'Full House Wiring',
+            'Footing Reinforcement',
+            'Wall Plastering',
+            'Wardrobe Carpentry',
+            'Tank Connection'
+          ][index],
+          description: 'High quality construction work.',
+          dateTime: DateTime.now().subtract(Duration(days: index)),
+          quoteStatus: index % 2 == 0 ? '₹${4500 + index * 1000} Quote Received' : 'Assigned',
+          materialsIncluded: index % 3 == 0,
+          status: index % 2 == 0 ? JobStatus.created : JobStatus.assigned,
+          jobNumber: 100 + index,
+          locationHash: 'hyd_${index + 1}',
+          homeownerId: 'user123',
+        ),
+        onTap: () {},
+      )),
+    );
+  }
+}
+
+class ProfileStub extends StatelessWidget {
+  const ProfileStub({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0D1117),
+      appBar: AppBar(title: const Text('Profile'), backgroundColor: const Color(0xFF161B22)),
+      body: const Center(child: Text('User Profile & Skills', style: TextStyle(color: Colors.white))),
     );
   }
 }

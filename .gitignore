@@ -12,3 +12,21 @@ frontend/.dart_tool/
 frontend/build/
 frontend/.idea/
 frontend/.packages
+.env
+*.log
+build/
+.dart_tool/
+.flutter-plugins*
+__pycache__/
+*.pyc
+venv/
+firestore-debug.log
+# Ignore built APKs and large binaries
+app-debug.apk
+*.apk
+emulator/ # or whatever folder contains them
+# Ignore built APKs and large binaries
+app-debug.apk
+*.apk
+emulator/
+build/

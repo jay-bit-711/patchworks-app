@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="google_app_id">1:868512832982:android:7c8e4e30ca35a141c71877</string>
+    <string name="gcm_defaultSenderId">868512832982</string>
+    <string name="default_web_client_id">868512832982-greilgo7b8tqeo2s202ufubd4i5lbfm4.apps.googleusercontent.com</string>
+    <string name="google_api_key">AIzaSyBWjNqaBJfISUMgyGYZX93XoqBbpB5Y9JA</string>
+    <string name="google_storage_bucket">construction-agents.firebasestorage.app</string>
+    <string name="project_id">construction-agents</string>
+</resources>

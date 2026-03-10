@@ -1,0 +1,153 @@
+{
+  "metadata": {
+    "location": "Hyderabad, India",
+    "currency": "INR",
+    "last_seeded": "2026-03-06",
+    "notes": "Values are example defaults; supervisor should update availability/prices as needed."
+  },
+  "materials": [
+    {
+      "id": "sand_lorry",
+      "name": "River Sand (Lorry)",
+      "unit": "ton",
+      "typical_load": 40,
+      "price_per_unit_inr": 2000,
+      "availability": { "lorry_count": 3, "units": "lorry" },
+      "last_updated_by": "supervisor",
+      "last_updated_at": "2026-03-06",
+      "notes": "Approx. 40 tons per sand lorry"
+    },
+    {
+      "id": "dust_lorry",
+      "name": "Dust / M-Sand (Lorry)",
+      "unit": "ton",
+      "typical_load": 40,
+      "price_per_unit_inr": 1800,
+      "availability": { "lorry_count": 2, "units": "lorry" },
+      "last_updated_by": "supervisor",
+      "last_updated_at": "2026-03-06"
+    },
+    {
+      "id": "brick_red",
+      "name": "Red Clay Brick",
+      "unit": "unit",
+      "typical_lorry_units": 8000,
+      "price_per_unit_inr": 7,
+      "availability": { "pallets": 5, "approx_units": 40000 },
+      "last_updated_by": "supervisor",
+      "last_updated_at": "2026-03-06"
+    },
+    {
+      "id": "brick_hollow",
+      "name": "Hollow Brick / Block",
+      "unit": "unit",
+      "typical_lorry_units": 4000,
+      "price_per_unit_inr": 12,
+      "availability": { "pallets": 3, "approx_units": 12000 },
+      "last_updated_by": "supervisor",
+      "last_updated_at": "2026-03-06"
+    },
+    {
+      "id": "cement_lorry",
+      "name": "Cement (50kg bag)",
+      "unit": "bag",
+      "typical_lorry_bags": 900,
+      "price_per_unit_inr": 430,
+      "price_per_ton_inr": 8600,
+      "availability": { "lorry_count": 1, "bags_on_site": 0 },
+      "last_updated_by": "supervisor",
+      "last_updated_at": "2026-03-06"
+    },
+    {
+      "id": "ready_mix",
+      "name": "Ready Mix Concrete (RMC)",
+      "unit": "m3",
+      "price_per_unit_inr": 6200,
+      "availability": { "trucks": 2, "units": "truck_loads" },
+      "last_updated_by": "supervisor",
+      "last_updated_at": "2026-03-06"
+    },
+    {
+      "id": "wires_finecab",
+      "name": "Electrical Wires (Finecab)",
+      "unit": "kg",
+      "price_per_unit_inr": 650,
+      "availability": { "rolls": 20, "approx_kg": 2000 },
+      "brand": "Finecab",
+      "last_updated_by": "supervisor",
+      "last_updated_at": "2026-03-06"
+    },
+    {
+      "id": "steel_tmt",
+      "name": "TMT Steel Bars",
+      "unit": "kg",
+      "price_per_unit_inr": 85,
+      "availability": { "tons_on_site": 5 },
+      "last_updated_by": "supervisor",
+      "last_updated_at": "2026-03-06"
+    },
+    {
+      "id": "aggregates",
+      "name": "Crushed Stone / Aggregates",
+      "unit": "ton",
+      "price_per_unit_inr": 1800,
+      "availability": { "trucks": 4 },
+      "last_updated_by": "supervisor",
+      "last_updated_at": "2026-03-06"
+    },
+    {
+      "id": "ply_12mm",
+      "name": "Plywood 12mm (8x4 ft)",
+      "unit": "sheet",
+      "price_per_unit_inr": 900,
+      "availability": { "sheets": 50 },
+      "last_updated_by": "supervisor",
+      "last_updated_at": "2026-03-06"
+    },
+    {
+      "id": "marble_flooring",
+      "name": "Marble Flooring",
+      "unit": "sqft",
+      "price_per_unit_inr": 120,
+      "availability": { "sheets_estimate": 2000 },
+      "last_updated_by": "supervisor",
+      "last_updated_at": "2026-03-06"
+    },
+    {
+      "id": "tiles_ceramic",
+      "name": "Ceramic Tiles",
+      "unit": "sqft",
+      "price_per_unit_inr": 45,
+      "availability": { "boxes": 100 },
+      "last_updated_by": "supervisor",
+      "last_updated_at": "2026-03-06"
+    },
+    {
+      "id": "paint",
+      "name": "Paint",
+      "unit": "liter",
+      "price_per_unit_inr": 250,
+      "availability": { "cans": 30 },
+      "last_updated_by": "supervisor",
+      "last_updated_at": "2026-03-06"
+    },
+    {
+      "id": "pvc_pipes",
+      "name": "PVC Pipes (various sizes)",
+      "unit": "meter",
+      "price_per_unit_inr": 120,
+      "availability": { "meters": 500 },
+      "last_updated_by": "supervisor",
+      "last_updated_at": "2026-03-06"
+    },
+    {
+      "id": "adhesive_tile",
+      "name": "Tile Adhesive (20kg bag)",
+      "unit": "bag",
+      "price_per_unit_inr": 450,
+      "availability": { "bags": 40 },
+      "last_updated_by": "supervisor",
+      "last_updated_at": "2026-03-06"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+name: flutter_clipboard_manager
+description: Local null-safe clipboard manager compatibility package
+version: 0.0.2
+publish_to: none
+
+environment:
+  sdk: '>=2.17.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter

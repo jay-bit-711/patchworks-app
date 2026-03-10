@@ -1,0 +1,140 @@
+{
+  "users": {
+    "docId": "uid",
+    "fields": {
+      "role": "homeowner|builder|contractor|mestri|plumber|electrician|admin|supervisor",
+      "name": "string",
+      "email": "string",
+      "phone": "string",
+      "language": "en|hi",
+      "geo": { "lat": "number", "lng": "number" },
+      "created_at": "timestamp",
+      "updated_at": "timestamp"
+    }
+  },
+  "projects": {
+    "docId": "project_id",
+    "fields": {
+      "title": "string",
+      "homeowner_uid": "string",
+      "assigned_contractor_uid": "string",
+      "member_uids": ["string"],
+      "status": "lead|plan_draft|plan_approved|contract_signed|construction_started|completed",
+      "is_patchwork_job": "boolean",
+      "plot_size_sqft": "number",
+      "floors": "number",
+      "quote_per_sqft": "number",
+      "estimated_total": "number",
+      "city": "string",
+      "pincode": "string",
+      "location": { "lat": "number", "lng": "number" },
+      "homeowner_phone": "string",
+      "builder_phone": "string",
+      "created_at": "timestamp",
+      "updated_at": "timestamp"
+    },
+    "subcollections": {
+      "ar_measurements": {
+        "fields": {
+          "point_cloud": "map",
+          "dimensions": "map",
+          "captured_by_uid": "string",
+          "captured_at": "timestamp"
+        }
+      }
+    }
+  },
+  "materials": {
+    "docId": "material_id",
+    "fields": {
+      "name": "string",
+      "category": "sand|concrete|brick|chips|steel|wire|other",
+      "unit": "kg|ton|piece|lorry|bag|roll",
+      "price": "number",
+      "currency": "INR",
+      "supplier": { "name": "string", "phone": "string" },
+      "stock_status": "in_stock|low|out",
+      "updated_at": "timestamp"
+    }
+  },
+  "jobs": {
+    "docId": "job_id",
+    "fields": {
+      "project_id": "string",
+      "title": "string",
+      "assigned_uid": "string",
+      "role": "mestri|plumber|electrician|contractor",
+      "status": "todo|in_progress|done",
+      "start_date": "timestamp",
+      "end_date": "timestamp",
+      "updated_at": "timestamp"
+    }
+  },
+  "evidence": {
+    "docId": "evidence_id",
+    "fields": {
+      "project_id": "string",
+      "stage": "string",
+      "image_url": "string",
+      "before_after": "before|after",
+      "uploader_uid": "string",
+      "timestamp": "timestamp"
+    }
+  },
+  "contracts": {
+    "docId": "contract_id",
+    "fields": {
+      "project_id": "string",
+      "doc_type": "contract|invoice|floor_plan|elevation",
+      "pdf_url": "string",
+      "created_by_agent": "agent_document_tracker",
+      "created_at": "timestamp"
+    }
+  },
+  "payments": {
+    "docId": "payment_id",
+    "fields": {
+      "project_id": "string",
+      "razorpay_order_id": "string",
+      "razorpay_payment_id": "string",
+      "amount": "number",
+      "currency": "INR",
+      "status": "created|paid|failed|refunded",
+      "method": "upi|card|wallet|netbanking",
+      "created_at": "timestamp"
+    }
+  },
+  "whatsapp_logs": {
+    "docId": "log_id",
+    "fields": {
+      "project_id": "string",
+      "event": "plan_finalized|cost_changed|payment_received|job_started|job_completed|status_updated",
+      "summary": "string",
+      "sent_to": ["map"],
+      "created_by_uid": "string",
+      "timestamp": "timestamp"
+    }
+  },
+  "coverage_areas": {
+    "docId": "area_id",
+    "fields": {
+      "city": "string",
+      "pincode": "string",
+      "latitude": "number",
+      "longitude": "number"
+    }
+  },
+  "contractors": {
+    "docId": "contractor_uid",
+    "fields": {
+      "uid": "string",
+      "name": "string",
+      "city": "string",
+      "pincode": "string",
+      "latitude": "number",
+      "longitude": "number",
+      "razorpay_account_id": "string",
+      "active": "boolean"
+    }
+  }
+}
