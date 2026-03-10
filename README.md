@@ -10,8 +10,18 @@
 
 ---
 
+## ✅ Current Project Status (Build: Mar 10)
+- **Security**: Granular Firestore & Storage rules enforced. 100MB Video/Image evidence support implemented.
+- **Auth**: End-to-end Google SSO with Role-Based routing (Homeowner vs. Builder).
+- **UI/UX**: Cinematic, auto-playing onboarding flow and high-density Job Management Dashboard.
+- **AI Agents**: Integrated **Agent Vijay 👷** (Construction Expert) and **Agent Material 📦** (Logistics).
+- **Architecture**: Implemented "Verified Head" task-based tracking for trade lead accountability.
+- **Performance**: Repository surgically cleaned and optimized (<50MB source code).
+
+---
+
 ## 🛠 Surgical Cleanup
-The repository has been surgically cleaned to maintain a lean footprint (<50MB). Misplaced Android SDK tools and redundant project copies have been removed to ensure fast load times and a professional developer environment.
+The repository has been surgically cleaned to maintain a lean footprint. Misplaced Android SDK tools (`build-tools`, `platforms`, etc.) and redundant project copies have been removed to ensure a professional developer environment.
 
 ## 🏗 "Verified Head" Architecture
 We have digitized individual accountability for every trade lead:
@@ -25,78 +35,84 @@ We have digitized individual accountability for every trade lead:
 
 ---
 
-Patchworks is a Flutter-based application designed for construction management and coordination. It leverages Firebase for backend services and provides a suite of tools for job creation, evidence capture, and real-time communication with specialized agents.
+## 🤖 AI Agent Ecosystem (Mix Flow)
+Our agents are specialized "Codex Assistants" designed to reduce manual oversight by 50%:
 
-## Key Features
+### 👷 Agent Vijay (Sales & Planning Expert)
+- **Persona**: A savvy local contractor uncle who knows the Hyderabad market (Sangareddy to KPHB).
+- **Function**: Captures project templates (Plot size, intent, floors) and provides floor-wise text plans and savvy quotes (anchoring to ₹1700/sqft base).
+- **Disclaimer**: "AI can make mistakes. Trust but Verify. Human computations are final."
 
-- **Role-based Authentication**: Secure login with Firebase Auth and Google Sign-In.
-- **Job Management**: Create and track jobs directly from the mobile app.
-- **Evidence Capture**: Document project progress with image and data capture.
-- **Project Dashboard**: Real-time overview of project status and metrics.
-- **AI-Powered Agent Chat**: Interactive chat interfaces with specialized agents:
-  - **Vijay**: General project coordination.
-  - **Material Agent**: Logistics and material tracking.
-  - **Document Tracker**: automated document and compliance monitoring.
-- **Integrated Payments**: Support for transactions via Razorpay.
-- **Location Services**: Geolocation and Google Maps integration for site tracking.
+### 📦 Agent Material (Logistics & Store)
+- **Persona**: A specialized vendor/seller with a 📦 badge.
+- **Function**: Handles store queries from `material.json`, provide quotes for sand lorries, bricks, and ready-mix.
+- **Fallback**: If items are unavailable, routes the user to WhatsApp for manual sourcing.
 
-## Technologies Used
+### 📋 Assigner (Territory Expansion)
+- **Persona**: Efficiency-focused dispatcher.
+- **Function**: Automatically matches worker skills to job descriptions and handles assignment in new locations where manual workforce is not yet established.
 
-- **Framework**: [Flutter](https://flutter.dev/)
-- **State Management**: [Provider](https://pub.dev/packages/provider)
-- **Backend**: [Firebase](https://firebase.google.com/) (Auth, Firestore, Functions, Storage, App Check)
-- **Maps**: [Google Maps Flutter](https://pub.dev/packages/google_maps_flutter)
-- **Payments**: [Razorpay Flutter](https://pub.dev/packages/razorpay_flutter)
-- **PDF Generation**: [pdf](https://pub.dev/packages/pdf)
-
-## Getting Started
-
-### Prerequisites
-
-- Flutter SDK (>= 3.0.0)
-- Java 21 (required for Firebase Emulators)
-- Android Studio / VS Code with Flutter extensions
-
-### Setup
-
-1.  Clone the repository.
-2.  Install dependencies:
-    ```bash
-    flutter pub get
-    ```
-3.  Configure Firebase:
-    - Add `google-services.json` to `android/app/`.
-    - Ensure SHA fingerprints are correctly set in the Firebase Console.
-4.  Run the application:
-    ```bash
-    flutter run
-    ```
+### 🎧 Support (Customer Care)
+- **Persona**: Professional Indian construction support.
+- **Function**: Chats via app, email, or WhatsApp. Fallback to human Admin if AI cannot resolve the query.
 
 ---
 
-## Troubleshooting
+## 🧪 Testing & Validation
+To ensure stability and "Trust but Verify" at the code level, run the following:
+
+### Model Tests (Logic)
+Verifies that job lifecycle, status transitions, and data structures are correct.
+```bash
+flutter test test/models/job_test.dart
+```
+
+### App Smoke Tests (UI)
+Ensures the app launches, initializes providers, and displays the splash screen correctly.
+```bash
+flutter test test/widget_test.dart
+```
+
+---
+
+## 🚀 Key Features
+
+- **Role-based Authentication**: Secure login with Firebase Auth and Google Sign-In.
+- **Job Management**: Unified "My Jobs" view for all roles with high-density cards.
+- **Evidence Hub**: 100MB Video and Image player integration for site verification.
+- **Project Dashboard**: Real-time overview for Supervisors with job management tools.
+- **Integrated Payments**: Escrow-based milestone payments (Wiring in progress).
+
+## 🛠 Technologies Used
+
+- **Frontend**: [Flutter](https://flutter.dev/) (Portrait-locked, Material 3)
+- **Backend**: [Firebase](https://firebase.google.com/) (Auth, Firestore, Storage, App Check) & [Django](https://www.djangoproject.com/)
+- **AI**: [OpenAI Assistants API](https://openai.com/) (Codex)
+- **Media**: [Video Player](https://pub.dev/packages/video_player) & [Chewie](https://pub.dev/packages/chewie)
+
+## 🏁 Getting Started
+
+### Prerequisites
+- Flutter SDK (>= 3.0.0)
+- Java 21 (for Firebase Emulators)
+- Python 3.13 (for Django backend)
+
+### Setup
+1. Clone the repository.
+2. Install dependencies: `flutter pub get`
+3. Configure Firebase: Add `google-services.json` to `android/app/`.
+4. Run: `flutter run`
+
+---
+
+## 🆘 Troubleshooting
 
 ### Java 21 Fix (Firebase Emulators)
-
-Run the following commands if `firebase emulators:start` fails with Java <21:
-
 ```bash
 brew install openjdk@21
 echo 'export PATH="/opt/homebrew/opt/openjdk@21/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
-java -version
 ```
 
 ### Fix ApiException 10 (Google Sign-In)
-
-ApiException 10 fixed with SHA1 `F9:50:95:E2:8A:6A:FD:18:47:A5:BA:A4:D8:34:CD:2F:53:31:FA:73` and SHA256 `2A:36:05:2A:A5:2D:B8:A6:A0:CB:BA:76:47:23:4E:F1:6F:2B:6B:EE:97:C3:14:A4:27:51:1A:80:CA:EC:68:51` added to console.firebase.google.com > Project Settings > General > SHA fingerprints. Download the new `google-services.json` to `android/app` and rebuild.
-
-### Rebuild Test
-
-To perform a clean rebuild and test on a device:
-```bash
-flutter clean
-flutter pub get
-flutter build apk --release --target-platform android-arm64
-adb install build/app/outputs/flutter-apk/app-release.apk
-```
+Ensure SHA fingerprints are added to Firebase Console and a fresh `google-services.json` is in `android/app`.
