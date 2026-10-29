@@ -10,106 +10,100 @@ class PostJobScreen extends StatefulWidget {
 class _PostJobScreenState extends State<PostJobScreen> {
   final _title = TextEditingController();
   final _desc = TextEditingController();
+  String _category = 'Plumbing';
   bool _withMaterials = false;
-  String _location = 'Hyderabad';
+  final _categories = ['Plumbing', 'Electrical', 'Masonry', 'Painting', 'Flooring', 'Waterproofing', 'Carpentry', 'Other'];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: const Text('Kotha Pani / New Pani'),
+        title: const Text('Post a Job', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF121212),
         foregroundColor: const Color(0xFFFF7A00),
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          const Text('1) Emi Pani? *', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 8),
+          const Text('What needs to be done?', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 12),
           TextField(
             controller: _title,
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
-              hintText: 'Emi pani?',
+              hintText: 'e.g. Ceiling water leak',
               hintStyle: const TextStyle(color: Colors.white38),
               filled: true,
               fillColor: const Color(0xFF1E1E1E),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-              suffixIcon: const Icon(Icons.mic, color: Color(0xFFFF7A00)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
             ),
           ),
           const SizedBox(height: 24),
-          const Text('2) Aadharam - Pani Mundu *', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
+          const Text('Category', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _categories.map((c) => ChoiceChip(
+              label: Text(c),
+              selected: _category == c,
+              selectedColor: const Color(0xFFFF7A00),
+              backgroundColor: const Color(0xFF1E1E1E),
+              labelStyle: TextStyle(color: _category == c ? Colors.black : Colors.white),
+              onSelected: (_) => setState(() => _category = c),
+            )).toList(),
+          ),
+          const SizedBox(height: 24),
+          const Text('Description', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _desc,
+            maxLines: 4,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: 'Describe the problem clearly...',
+              hintStyle: const TextStyle(color: Colors.white38),
+              filled: true,
+              fillColor: const Color(0xFF1E1E1E),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+            ),
+          ),
+          const SizedBox(height: 24),
+          const Text('Before photos', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
           const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF8B4513),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                  ),
-                  onPressed: () {},
-                  icon: const Icon(Icons.camera_alt),
-                  label: const Text('Camera'),
-                ),
+                child: _MediaButton(icon: Icons.camera_alt, label: 'Camera', onTap: () {}),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors.white38),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                  ),
-                  onPressed: () {},
-                  icon: const Icon(Icons.photo_library, color: Colors.white70),
-                  label: const Text('Gallery', style: TextStyle(color: Colors.white70)),
-                ),
+                child: _MediaButton(icon: Icons.photo_library, label: 'Gallery', onTap: () {}),
               ),
             ],
           ),
           const SizedBox(height: 24),
-          const Text('3) Material Choice *', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 12),
-          SegmentedButton<bool>(
-            segments: const [
-              ButtonSegment(value: true, label: Text('With'), icon: Icon(Icons.inventory_2_outlined)),
-              ButtonSegment(value: false, label: Text('Without'), icon: Icon(Icons.check)),
-            ],
-            selected: {_withMaterials},
-            onSelectionChanged: (s) => setState(() => _withMaterials = s.first),
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.resolveWith((states) =>
-                  states.contains(WidgetState.selected) ? const Color(0xFFFF7A00) : const Color(0xFF1E1E1E)),
-              foregroundColor: WidgetStateProperty.all(Colors.white),
-            ),
+          SwitchListTile(
+            tileColor: const Color(0xFF1E1E1E),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: const Text('With materials', style: TextStyle(color: Colors.white)),
+            subtitle: const Text('Pro brings materials', style: TextStyle(color: Colors.white54)),
+            value: _withMaterials,
+            activeColor: const Color(0xFFFF7A00),
+            onChanged: (v) => setState(() => _withMaterials = v),
           ),
           const SizedBox(height: 24),
-          const Text('4) Ekkada?', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 8),
-          TextField(
-            controller: TextEditingController(text: _location),
-            style: const TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: const Color(0xFF1E1E1E),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-              suffixIcon: const Icon(Icons.location_on, color: Color(0xFFFF7A00)),
-            ),
-          ),
+          const Text('Location', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
           const SizedBox(height: 12),
-          OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
-              side: const BorderSide(color: Color(0xFFFF7A00)),
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-            ),
-            onPressed: () {},
-            icon: const Icon(Icons.location_pin, color: Color(0xFFFF7A00)),
-            label: const Text('Precise GPS', style: TextStyle(color: Color(0xFFFF7A00))),
+          ListTile(
+            tileColor: const Color(0xFF1E1E1E),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            leading: const Icon(Icons.location_on, color: Color(0xFFFF7A00)),
+            title: const Text('Patancheru, Hyderabad', style: TextStyle(color: Colors.white)),
+            trailing: const Icon(Icons.edit, color: Colors.white38),
+            onTap: () {},
           ),
           const SizedBox(height: 40),
           ElevatedButton(
@@ -118,15 +112,37 @@ class _PostJobScreenState extends State<PostJobScreen> {
               foregroundColor: Colors.black,
               padding: const EdgeInsets.symmetric(vertical: 18),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              elevation: 4,
             ),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Job posted! Pay ₹150 next.')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Job posted successfully')));
               Navigator.pop(context);
             },
             child: const Text('Post Job', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _MediaButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  const _MediaButton({required this.icon, required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton.icon(
+      style: OutlinedButton.styleFrom(
+        side: const BorderSide(color: Color(0xFFFF7A00)),
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      onPressed: onTap,
+      icon: Icon(icon, color: const Color(0xFFFF7A00)),
+      label: Text(label, style: const TextStyle(color: Color(0xFFFF7A00))),
     );
   }
 }
