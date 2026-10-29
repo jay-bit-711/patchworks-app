@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'upi_fee_screen.dart';
+import 'customer_home_screen.dart';
 
 class RoleSelectScreen extends StatelessWidget {
   const RoleSelectScreen({super.key});
 
   void _go(BuildContext context, String role) {
+    Widget screen;
+    if (role == 'customer') {
+      screen = const CustomerHomeScreen();
+    } else {
+      screen = HomeByRole(role: role);
+    }
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => HomeByRole(role: role),
-      ),
+      MaterialPageRoute(builder: (_) => screen),
     );
   }
 
@@ -103,7 +108,6 @@ class HomeByRole extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isCustomer = role == 'customer';
     final isPro = role == 'pro';
 
     return Scaffold(
@@ -119,16 +123,14 @@ class HomeByRole extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              isCustomer
-                  ? 'Post a job → match a pro → pay ₹150 site visit'
-                  : isPro
-                      ? 'Accept jobs → pay ₹150 site visit → unlock contact'
-                      : 'Monitor all site visits & revenue',
+              isPro
+                  ? 'Accept jobs → pay ₹150 site visit → unlock contact'
+                  : 'Monitor all site visits & revenue',
               style: const TextStyle(color: Colors.white70, fontSize: 16),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 40),
-            if (isCustomer || isPro)
+            if (isPro)
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFF7A00),
@@ -138,18 +140,18 @@ class HomeByRole extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => UpiFeeScreen(
+                      builder: (_) => const UpiFeeScreen(
                         jobId: 1,
                         customerId: 1,
                         proId: 2,
-                        party: isCustomer ? 'customer' : 'pro',
+                        party: 'pro',
                       ),
                     ),
                   );
                 },
-                child: Text(
-                  isCustomer ? 'Start Site Visit (pay ₹150)' : 'Confirm Site Visit Fee (₹150)',
-                  style: const TextStyle(fontSize: 18),
+                child: const Text(
+                  'Confirm Site Visit Fee (₹150)',
+                  style: TextStyle(fontSize: 18),
                 ),
               ),
             if (role == 'admin')
