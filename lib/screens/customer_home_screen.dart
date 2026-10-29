@@ -1,102 +1,169 @@
 import 'package:flutter/material.dart';
 import 'post_job_screen.dart';
-import 'upi_fee_screen.dart';
 import 'my_jobs_screen.dart';
 import 'transactions_screen.dart';
 import 'support_screen.dart';
+import 'upi_fee_screen.dart';
 
-class CustomerHomeScreen extends StatelessWidget {
+class CustomerHomeScreen extends StatefulWidget {
   const CustomerHomeScreen({super.key});
+
+  @override
+  State<CustomerHomeScreen> createState() => _CustomerHomeScreenState();
+}
+
+class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
+  int _index = 0;
+
+  final _pages = const [
+    _HomeTab(),
+    MyJobsScreen(),
+    TransactionsScreen(),
+    SupportScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
-      appBar: AppBar(
-        title: const Text('Home'),
-        backgroundColor: const Color(0xFF121212),
-        foregroundColor: const Color(0xFFFF7A00),
-        actions: [
-          IconButton(icon: const Icon(Icons.support_agent), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SupportScreen()))),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: const Color(0xFFFF7A00),
-        foregroundColor: Colors.black,
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PostJobScreen())),
-        icon: const Icon(Icons.add),
-        label: const Text('Post Job'),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          const Text('Quick Actions', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _Action(icon: Icons.list_alt, label: 'My Jobs', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MyJobsScreen()))),
-              const SizedBox(width: 12),
-              _Action(icon: Icons.receipt_long, label: 'Transactions', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TransactionsScreen()))),
-            ],
-          ),
-          const SizedBox(height: 24),
-          const Text('Active Jobs', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-          _JobCard(
-            title: 'Plumbing - Water in',
-            location: 'Patancheru',
-            status: 'Matched — Pay ₹150',
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const UpiFeeScreen(jobId: 1, customerId: 1, proId: 2, party: 'customer'))),
-          ),
-          const SizedBox(height: 12),
-          _JobCard(title: 'Electrical points', location: 'Sangareddy', status: 'Open', onTap: () {}),
+      body: _pages[_index],
+      floatingActionButton: _index == 0
+          ? FloatingActionButton.extended(
+              backgroundColor: const Color(0xFFFF7A00),
+              foregroundColor: Colors.black,
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PostJobScreen())),
+              icon: const Icon(Icons.add),
+              label: const Text('Kotha Pani'),
+            )
+          : null,
+      bottomNavigationBar: NavigationBar(
+        backgroundColor: const Color(0xFF1A1A1A),
+        indicatorColor: const Color(0xFFFF7A00),
+        selectedIndex: _index,
+        onDestinationSelected: (i) => setState(() => _index = i),
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
+          NavigationDestination(icon: Icon(Icons.list_alt_outlined), selectedIcon: Icon(Icons.list_alt), label: 'Na Panulu'),
+          NavigationDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: 'Payments'),
+          NavigationDestination(icon: Icon(Icons.support_agent_outlined), selectedIcon: Icon(Icons.support_agent), label: 'Support'),
         ],
       ),
     );
   }
 }
 
-class _Action extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  const _Action({required this.icon, required this.label, required this.onTap});
+class _HomeTab extends StatelessWidget {
+  const _HomeTab();
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          floating: true,
+          backgroundColor: const Color(0xFF121212),
+          title: const Text('Home / Na Panulu', style: TextStyle(color: Color(0xFFFF7A00), fontWeight: FontWeight.bold)),
+          actions: [
+            CircleAvatar(backgroundColor: const Color(0xFFFF7A00), child: const Icon(Icons.construction, color: Colors.black)),
+            const SizedBox(width: 12),
+          ],
+        ),
+        SliverPadding(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: const Color(0xFF1E1E1E), borderRadius: BorderRadius.circular(12)),
-          child: Column(
-            children: [
-              Icon(icon, color: const Color(0xFFFF7A00), size: 32),
-              const SizedBox(height: 8),
-              Text(label, style: const TextStyle(color: Colors.white)),
-            ],
+          sliver: SliverList(
+            delegate: SliverChildListDelegate([
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF3E0),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Text('Welcome Jayanth', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              ),
+              const SizedBox(height: 20),
+              const Text('Active Jobs', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
+              _JobCard(
+                title: 'water leaks from ceiling',
+                material: 'Without',
+                status: 'Matched',
+                time: '19 Feb, 06:44 PM',
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const UpiFeeScreen(jobId: 1, customerId: 1, proId: 2, party: 'customer'))),
+              ),
+              _JobCard(
+                title: 'wall cleaning',
+                material: 'Without',
+                status: 'Created',
+                time: '19 Feb, 03:09 PM',
+                onTap: () {},
+              ),
+              _JobCard(
+                title: 'sink water leak',
+                material: 'Without',
+                status: 'Created',
+                time: '18 Feb, 06:38 PM',
+                onTap: () {},
+              ),
+            ]),
           ),
         ),
-      ),
+      ],
     );
   }
 }
 
 class _JobCard extends StatelessWidget {
-  final String title, location, status;
+  final String title, material, status, time;
   final VoidCallback onTap;
-  const _JobCard({required this.title, required this.location, required this.status, required this.onTap});
+  const _JobCard({required this.title, required this.material, required this.status, required this.time, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: const Color(0xFF1E1E1E),
-      child: ListTile(
-        title: Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-        subtitle: Text('$location • $status', style: const TextStyle(color: Colors.white70)),
-        trailing: const Icon(Icons.chevron_right, color: Colors.white38),
+      margin: const EdgeInsets.only(bottom: 16),
+      color: const Color(0xFFFFF8F0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
         onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.image_not_supported_outlined, color: Colors.black45),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                    const SizedBox(height: 4),
+                    Text('Material: $material', style: TextStyle(color: Colors.grey.shade700)),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: const Color(0xFFFF7A00)),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(status, style: const TextStyle(color: Color(0xFFFF7A00), fontSize: 12)),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(time, style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
