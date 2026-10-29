@@ -14,12 +14,12 @@ import 'screens/evidence_capture_screen.dart';
 import 'screens/project_dashboard_screen.dart';
 import 'screens/agent_chat_screen.dart';
 import 'screens/pre_login_onboarding.dart';
+import 'screens/upi_fee_screen.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Lock orientation to portrait for a professional look
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -56,7 +56,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
         primarySwatch: Colors.orange,
-        scaffoldBackgroundColor: const Color(0xFF0D1117),
+        scaffoldBackgroundColor: const Color(0xFF121212),
+        primaryColor: const Color(0xFFFF7A00),
         useMaterial3: true,
       ),
       home: const SplashScreen(),
@@ -70,6 +71,16 @@ class MyApp extends StatelessWidget {
         '/chat/vijay': (_) => const AgentChatScreen(agentId: 'vijay'),
         '/chat/material': (_) => const AgentChatScreen(agentId: 'material'),
         '/chat/document_tracker': (_) => const AgentChatScreen(agentId: 'document_tracker'),
+        '/upi-fee': (context) {
+          // Example args: Navigator.pushNamed(context, '/upi-fee', arguments: {...});
+          final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+          return UpiFeeScreen(
+            jobId: args?['jobId'] ?? 1,
+            customerId: args?['customerId'] ?? 1,
+            proId: args?['proId'] ?? 2,
+            party: args?['party'] ?? 'customer',
+          );
+        },
       },
     );
   }
