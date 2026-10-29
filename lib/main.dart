@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'screens/login_phone_screen.dart';
+import 'screens/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,9 +20,11 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
         scaffoldBackgroundColor: const Color(0xFF121212),
         primaryColor: const Color(0xFFFF7A00),
+        colorScheme: const ColorScheme.dark(primary: Color(0xFFFF7A00)),
         useMaterial3: true,
+        fontFamily: 'Roboto',
       ),
-      home: const LoginPhoneScreen(),
+      home: const SplashScreen(),
     );
   }
 }
