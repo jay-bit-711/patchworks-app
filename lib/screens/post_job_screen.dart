@@ -8,117 +8,132 @@ class PostJobScreen extends StatefulWidget {
 }
 
 class _PostJobScreenState extends State<PostJobScreen> {
-  final _title = TextEditingController();
-  final _desc = TextEditingController();
-  String _category = 'Plumbing';
+  String? _category;
+  String _location = 'Hyderabad';
   bool _withMaterials = false;
-  final _categories = ['Plumbing', 'Electrical', 'Masonry', 'Painting', 'Flooring', 'Waterproofing', 'Carpentry', 'Other'];
+
+  final _categories = [
+    ('Plumbing', Icons.water_drop_outlined),
+    ('Electrical', Icons.electrical_services_outlined),
+    ('Masonry', Icons.domain),
+    ('Painting', Icons.format_paint),
+    ('Flooring', Icons.grid_on),
+    ('Waterproofing', Icons.umbrella),
+    ('Carpentry', Icons.carpenter),
+    ('Other', Icons.more_horiz),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: const Text('Post a Job', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF121212),
         foregroundColor: const Color(0xFFFF7A00),
+        title: const Text('New Job'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         children: [
-          const Text('What needs to be done?', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _title,
-            style: const TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              hintText: 'e.g. Ceiling water leak',
-              hintStyle: const TextStyle(color: Colors.white38),
-              filled: true,
-              fillColor: const Color(0xFF1E1E1E),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+          // Where?
+          _Question(
+            icon: Icons.location_on,
+            question: 'Where?',
+            child: ListTile(
+              tileColor: const Color(0xFF1E1E1E),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              leading: const Icon(Icons.location_pin, color: Color(0xFFFF7A00)),
+              title: Text(_location, style: const TextStyle(color: Colors.white, fontSize: 18)),
+              trailing: const Icon(Icons.edit, color: Colors.white38),
+              onTap: () {},
             ),
           ),
-          const SizedBox(height: 24),
-          const Text('Category', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _categories.map((c) => ChoiceChip(
-              label: Text(c),
-              selected: _category == c,
-              selectedColor: const Color(0xFFFF7A00),
-              backgroundColor: const Color(0xFF1E1E1E),
-              labelStyle: TextStyle(color: _category == c ? Colors.black : Colors.white),
-              onSelected: (_) => setState(() => _category = c),
-            )).toList(),
-          ),
-          const SizedBox(height: 24),
-          const Text('Description', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _desc,
-            maxLines: 4,
-            style: const TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              hintText: 'Describe the problem clearly...',
-              hintStyle: const TextStyle(color: Colors.white38),
-              filled: true,
-              fillColor: const Color(0xFF1E1E1E),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+          const SizedBox(height: 32),
+
+          // What?
+          _Question(
+            icon: Icons.construction,
+            question: 'What?',
+            child: Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: _categories.map((c) {
+                final selected = _category == c.$1;
+                return GestureDetector(
+                  onTap: () => setState(() => _category = c.$1),
+                  child: Container(
+                    width: 90,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    decoration: BoxDecoration(
+                      color: selected ? const Color(0xFFFF7A00) : const Color(0xFF1E1E1E),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(c.$2, color: selected ? Colors.black : const Color(0xFFFF7A00), size: 32),
+                        const SizedBox(height: 8),
+                        Text(c.$1, style: TextStyle(color: selected ? Colors.black : Colors.white, fontSize: 12), textAlign: TextAlign.center),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
           ),
-          const SizedBox(height: 24),
-          const Text('Before photos', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _MediaButton(icon: Icons.camera_alt, label: 'Camera', onTap: () {}),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _MediaButton(icon: Icons.photo_library, label: 'Gallery', onTap: () {}),
-              ),
-            ],
+          const SizedBox(height: 32),
+
+          // Photos
+          _Question(
+            icon: Icons.photo_camera,
+            question: 'Show me',
+            child: Row(
+              children: [
+                Expanded(child: _BigIconButton(icon: Icons.camera_alt, label: 'Camera')),
+                const SizedBox(width: 16),
+                Expanded(child: _BigIconButton(icon: Icons.photo_library, label: 'Gallery')),
+              ],
+            ),
           ),
-          const SizedBox(height: 24),
-          SwitchListTile(
-            tileColor: const Color(0xFF1E1E1E),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            title: const Text('With materials', style: TextStyle(color: Colors.white)),
-            subtitle: const Text('Pro brings materials', style: TextStyle(color: Colors.white54)),
-            value: _withMaterials,
-            activeColor: const Color(0xFFFF7A00),
-            onChanged: (v) => setState(() => _withMaterials = v),
+          const SizedBox(height: 32),
+
+          // Materials
+          _Question(
+            icon: Icons.inventory_2_outlined,
+            question: 'Materials?',
+            child: Row(
+              children: [
+                Expanded(
+                  child: _ChoiceButton(
+                    label: 'With',
+                    selected: _withMaterials,
+                    onTap: () => setState(() => _withMaterials = true),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _ChoiceButton(
+                    label: 'Without',
+                    selected: !_withMaterials,
+                    onTap: () => setState(() => _withMaterials = false),
+                  ),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 24),
-          const Text('Location', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 12),
-          ListTile(
-            tileColor: const Color(0xFF1E1E1E),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            leading: const Icon(Icons.location_on, color: Color(0xFFFF7A00)),
-            title: const Text('Patancheru, Hyderabad', style: TextStyle(color: Colors.white)),
-            trailing: const Icon(Icons.edit, color: Colors.white38),
-            onTap: () {},
-          ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 48),
+
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFFF7A00),
               foregroundColor: Colors.black,
-              padding: const EdgeInsets.symmetric(vertical: 18),
+              padding: const EdgeInsets.symmetric(vertical: 20),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              elevation: 4,
             ),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Job posted successfully')));
+            onPressed: _category == null ? null : () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Job posted')));
               Navigator.pop(context);
             },
-            child: const Text('Post Job', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            child: const Text('Post', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -126,23 +141,75 @@ class _PostJobScreenState extends State<PostJobScreen> {
   }
 }
 
-class _MediaButton extends StatelessWidget {
+class _Question extends StatelessWidget {
   final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  const _MediaButton({required this.icon, required this.label, required this.onTap});
+  final String question;
+  final Widget child;
+  const _Question({required this.icon, required this.question, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton.icon(
-      style: OutlinedButton.styleFrom(
-        side: const BorderSide(color: Color(0xFFFF7A00)),
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: const Color(0xFFFF7A00), size: 28),
+            const SizedBox(width: 12),
+            Text(question, style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w600)),
+          ],
+        ),
+        const SizedBox(height: 16),
+        child,
+      ],
+    );
+  }
+}
+
+class _BigIconButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  const _BigIconButton({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 24),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E1E),
+        borderRadius: BorderRadius.circular(16),
       ),
-      onPressed: onTap,
-      icon: Icon(icon, color: const Color(0xFFFF7A00)),
-      label: Text(label, style: const TextStyle(color: Color(0xFFFF7A00))),
+      child: Column(
+        children: [
+          Icon(icon, color: const Color(0xFFFF7A00), size: 40),
+          const SizedBox(height: 8),
+          Text(label, style: const TextStyle(color: Colors.white)),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChoiceButton extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  const _ChoiceButton({required this.label, required this.selected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        decoration: BoxDecoration(
+          color: selected ? const Color(0xFFFF7A00) : const Color(0xFF1E1E1E),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Center(
+          child: Text(label, style: TextStyle(color: selected ? Colors.black : Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+        ),
+      ),
     );
   }
 }
