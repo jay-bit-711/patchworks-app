@@ -261,3 +261,41 @@ class Interest(models.Model):
 
     def __str__(self):
         return f"{self.user} interest in {self.area}"
+
+
+
+class Lead(models.Model):
+    TYPE_CHOICES = (
+        ("homeowner", "Homeowner enquiry"),
+        ("contractor", "Contractor partnership"),
+        ("developer", "Developer enquiry"),
+    )
+    STATUS_CHOICES = (
+        ("new", "New"),
+        ("contacted", "Contacted"),
+        ("qualified", "Qualified"),
+        ("quoted", "Quoted"),
+        ("converted", "Converted"),
+        ("lost", "Lost"),
+    )
+
+    name = models.CharField(max_length=120)
+    phone = models.CharField(max_length=16, db_index=True)
+    email = models.EmailField(blank=True)
+    lead_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default="homeowner")
+    service = models.CharField(max_length=80, blank=True)
+    location = models.CharField(max_length=180, blank=True)
+    details = models.TextField(blank=True)
+    source_url = models.URLField(max_length=500, blank=True)
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default="new", db_index=True)
+    assigned_to = models.ForeignKey(
+        User, null=True, blank=True, on_delete=models.SET_NULL, related_name="assigned_leads"
+    )
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.name} — {self.service or self.get_lead_type_display()} ({self.phone})"
