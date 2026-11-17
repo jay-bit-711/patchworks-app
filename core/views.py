@@ -4,11 +4,11 @@ from django.utils import timezone
 from datetime import timedelta
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Interest, Job
+from .models import Interest, Job, Lead
 from .permissions import IsAdminOrSuperAdmin
 from .serializers import EvidenceSerializer, InterestSerializer, JobSerializer, RatingSerializer, UserSerializer
 
@@ -608,3 +608,55 @@ class InterestCreateView(APIView):
             message=serializer.validated_data.get("message", ""),
         )
         return Response(InterestSerializer(interest).data, status=status.HTTP_201_CREATED)
+
+
+
+class PublicLeadCreateView(APIView):
+    """Public website intake. CRM status and assignment are never client-writable."""
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def post(self, request):
+        from django.core.validators import validate_email
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        import re
+
+        data = request.data
+        # Quietly discard bot submissions using the hidden website honeypot.
+        if str(data.get("website") or "").strip():
+            return Response({"detail": "Enquiry received."}, status=status.HTTP_201_CREATED)
+
+        name = str(data.get("name") or "").strip()
+        raw_phone = str(data.get("phone") or "").strip()
+        digits = re.sub(r"\\D", "", raw_phone)
+        if digits.startswith("91") and len(digits) == 12:
+            phone = "+" + digits
+        elif len(digits) == 10 and digits[0] in "6789":
+            phone = "+91" + digits
+        else:
+            return Response({"phone": ["Enter a valid 10-digit Indian mobile number."]}, status=status.HTTP_400_BAD_REQUEST)
+        if not name or len(name) > 120:
+            return Response({"name": ["Name is required (maximum 120 characters)."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        email = str(data.get("email") or "").strip()[:254]
+        if email:
+            try:
+                validate_email(email)
+            except DjangoValidationError:
+                return Response({"email": ["Enter a valid email address."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        lead_type = str(data.get("lead_type") or "homeowner").strip().lower()
+        if lead_type not in {"homeowner", "contractor", "developer"}:
+            return Response({"lead_type": ["Select a valid enquiry type."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        lead = Lead.objects.create(
+            name=name,
+            phone=phone,
+            email=email,
+            lead_type=lead_type,
+            service=str(data.get("service") or "")[:80],
+            location=str(data.get("location") or data.get("area") or "")[:180],
+            details=str(data.get("details") or "")[:4000],
+            source_url=str(data.get("source_url") or "")[:500],
+        )
+        return Response({"id": lead.pk, "detail": "Enquiry received."}, status=status.HTTP_201_CREATED)
