@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
-from .models import User, Job, Evidence, Rating  # ← Add Rating here!
+from .models import User, Job, Evidence, Rating, Lead
 # core/admin.py (add this class and update registration)
 
 from .forms import EvidenceAdminForm
@@ -69,3 +69,15 @@ class EvidenceAdmin(admin.ModelAdmin):
             return f"{obj.file_size / 1024:.2f} KB" if obj.file_size < 1024*1024 else f"{obj.file_size / (1024*1024):.2f} MB"
         return "0"
     file_size_display.short_description = "Size"
+
+
+
+@admin.register(Lead)
+class LeadAdmin(admin.ModelAdmin):
+    list_display = ("name", "phone", "lead_type", "service", "location", "status", "assigned_to", "created_at")
+    list_filter = ("status", "lead_type", "service", "created_at")
+    search_fields = ("name", "phone", "email", "location", "details")
+    readonly_fields = ("created_at", "updated_at")
+    list_editable = ("status", "assigned_to")
+    date_hierarchy = "created_at"
+    ordering = ("-created_at",)
