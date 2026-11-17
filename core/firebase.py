@@ -7,17 +7,21 @@ from firebase_admin import auth, credentials, storage
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SERVICE_ACCOUNT_PATH = os.getenv("FIREBASE_CREDENTIALS_PATH", str(BASE_DIR / "service-account.json"))
+SERVICE_ACCOUNT_JSON = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
 STORAGE_BUCKET = os.getenv("FIREBASE_STORAGE_BUCKET", "patchworks-3178f.firebasestorage.app")
 
 
 def _init_app():
     if firebase_admin._apps:
         return firebase_admin.get_app()
-    if not os.path.exists(SERVICE_ACCOUNT_PATH):
-        print(f"[firebase] service account not found at: {SERVICE_ACCOUNT_PATH}")
-        return None
     try:
-        cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
+        if SERVICE_ACCOUNT_JSON:
+            cred = credentials.Certificate(__import__("json").loads(SERVICE_ACCOUNT_JSON))
+        elif os.path.exists(SERVICE_ACCOUNT_PATH):
+            cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
+        else:
+            print("[firebase] no service account configured")
+            return None
         app = firebase_admin.initialize_app(cred, {"storageBucket": STORAGE_BUCKET})
         print(f"[firebase] initialized app with bucket: {STORAGE_BUCKET}")
         return app
