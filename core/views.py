@@ -23,35 +23,7 @@ def _resolved_role(user):
     if user.role in {"homeowner", "builder", "admin", "superadmin"}:
         return user.role
     return "homeowner"
-@action(detail=True, methods=["post"], permission_classes=[IsAuthenticated, IsAdminOrSuperAdmin])
-def assign(self, request, pk=None):
-    job = self.get_object()
-    builder_id = request.data.get("builder_id") or request.data.get("mestri_id")
-    if not builder_id:
-        return Response({"detail": "builder_id is required."}, status=status.HTTP_400_BAD_REQUEST)
-    mestri = get_object_or_404(User, id=builder_id)
-    if mestri.role not in {"builder", "admin", "superadmin"}:
-        return Response({"detail": "Assignee must be builder/admin/superadmin."}, status=status.HTTP_400_BAD_REQUEST)
-    job.assigned_mestri = mestri
-    if job.status in {"created", "quoted"}:
-        job.status = "assigned"
-    job.save(update_fields=["assigned_mestri", "status"])
-    return Response(JobSerializer(job, context={"request": request}).data)
-@action(detail=True, methods=["post"], permission_classes=[IsAuthenticated, IsAdminOrSuperAdmin], url_path="review-builder")
-def review_builder(self, request, pk=None):
-    # ...
-    if decision == "approve":
-        # ...
-        if user.role not in {"admin", "superadmin"}:
-            user.role = "builder"
-    # ...
 
-class BuilderRequestView(APIView):
-    permission_classes = [IsAuthenticated]
-    # ...
-
-class MestriRequestView(BuilderRequestView):
-    """Backward-compatible alias for legacy clients."""
 
 class AuthSyncView(APIView):
     permission_classes = [IsAuthenticated]
