@@ -4,7 +4,8 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     AdminUserViewSet,
     AuthSyncView,
-    MestriRequestView,\n    PublicLeadCreateView,
+    MestriRequestView,
+    PublicLeadCreateView,
     EvidenceUploadView,
     InterestCreateView,
     JobViewSet,
@@ -19,7 +20,8 @@ router.register(r"jobs", JobViewSet, basename="job")
 router.register(r"admin/users", AdminUserViewSet, basename="admin-users")
 
 urlpatterns = [
-    path("leads/", PublicLeadCreateView.as_view(), name="public-lead-create"),\n    path("auth/sync/", AuthSyncView.as_view(), name="auth-sync"),
+    path("leads/", PublicLeadCreateView.as_view(), name="public-lead-create"),
+    path("auth/sync/", AuthSyncView.as_view(), name="auth-sync"),
     path("builder/request/", BuilderRequestView.as_view(), name="builder-request"),
     path("mestri/request/", MestriRequestView.as_view(), name="mestri-request"),
     path("evidence/upload/", EvidenceUploadView.as_view(), name="evidence-upload"),
