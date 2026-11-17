@@ -134,3 +134,43 @@ class PatchworksApiTests(APITestCase):
 
     def tearDown(self):
         Evidence.objects.all().delete()
+
+
+class PublicLeadIntakeTests(APITestCase):
+    def test_website_can_submit_valid_lead_without_login(self):
+        response = self.client.post(
+            "/api/leads/",
+            {
+                "name": "Asha Rao",
+                "phone": "9876543210",
+                "lead_type": "homeowner",
+                "service": "Plumbing",
+                "location": "Kondapur, Hyderabad",
+                "details": "Bathroom renovation enquiry",
+                "source_url": "https://patchworks.in/services/plumbing.html",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        from .models import Lead
+        lead = Lead.objects.get(pk=response.data["id"])
+        self.assertEqual(lead.phone, "+919876543210")
+        self.assertEqual(lead.status, "new")
+
+    def test_invalid_phone_is_rejected(self):
+        response = self.client.post(
+            "/api/leads/",
+            {"name": "Asha", "phone": "12345"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_honeypot_submission_is_discarded(self):
+        response = self.client.post(
+            "/api/leads/",
+            {"name": "Bot", "phone": "9876543210", "website": "https://spam.example"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        from .models import Lead
+        self.assertEqual(Lead.objects.count(), 0)
