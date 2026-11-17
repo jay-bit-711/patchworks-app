@@ -1,3 +1,9 @@
-firebase-admin
-firebase-functions
-openai
+Django>=6.0,<6.1
+djangorestframework>=3.16,<3.17
+gunicorn>=23,<24
+dj-database-url>=2.3,<3
+psycopg[binary]>=3.2,<4
+whitenoise>=6.9,<7
+django-cors-headers>=4.7,<5
+firebase-admin>=6.8,<7
+openai>=1.90,<3
