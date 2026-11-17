@@ -628,7 +628,7 @@ class PublicLeadCreateView(APIView):
 
         name = str(data.get("name") or "").strip()
         raw_phone = str(data.get("phone") or "").strip()
-        digits = re.sub(r"\\D", "", raw_phone)
+        digits = re.sub(r"\D", "", raw_phone)
         if digits.startswith("91") and len(digits) == 12:
             phone = "+" + digits
         elif len(digits) == 10 and digits[0] in "6789":
