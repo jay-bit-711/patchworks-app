@@ -1,311 +1,100 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Patchworks - Trust but Verify. Incremental home repairs and upgrades in Hyderabad.">
-  <title>Patchworks - Trust but Verify</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171714">
+  <meta name="description" content="Patchworks — considered repairs, precise upgrades and verified home improvement across Hyderabad.">
+  <title>Patchworks — Better Homes, Built on Trust</title>
   <link rel="icon" href="logo.png" type="image/png">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --pw-primary: #ee7429;
-      --pw-accent: #ee7429;
-      --pw-dark: #000000;
-      --pw-bg: #000000;
-      --pw-surface: #000000;
-      --pw-text: #ffffff;
-    }
-    body { font-family: 'Poppins', sans-serif; background: var(--pw-bg); color: var(--pw-text); line-height: 1.6; position: relative; overflow-x: hidden; }
-    #bg-video {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: -3;
-      filter: saturate(1.05) contrast(1.05);
-    }
-    #bg-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: -2;
-      background:
-        radial-gradient(circle at 15% 20%, rgba(238,116,41,.24), transparent 33%),
-        radial-gradient(circle at 80% 70%, rgba(238,116,41,.28), transparent 38%),
-        radial-gradient(circle at 50% 50%, rgba(238,116,41,.16), transparent 58%),
-        rgba(0, 0, 0, .70);
-      pointer-events: none;
-    }
-    .navbar { background: rgba(0,0,0,.92); backdrop-filter: blur(6px); border-bottom: 1px solid rgba(238,116,41,.42); }
-    .hero {
-      background: linear-gradient(130deg, rgba(0,0,0,.96), rgba(238,116,41,.34));
-      color: #fff;
-      padding: 120px 0 80px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::after {
-      content: '';
-      position: absolute;
-      width: 340px;
-      height: 340px;
-      right: -120px;
-      top: -80px;
-      background: radial-gradient(circle, rgba(238,116,41,0.42), transparent 65%);
-    }
-    .hero img { width: 140px; margin-bottom: 15px; }
-    .hero h2 { color: var(--pw-accent); }
-    .cta-btn { font-size: 2.2rem; margin: 0 20px; color: #fff; transition: all 0.3s; }
-    .cta-btn:hover { color: var(--pw-accent); transform: scale(1.12); }
-    .section { padding: 60px 0; }
-    .section { background: rgba(0,0,0,.58); backdrop-filter: blur(2px); }
-    .section-light { background: rgba(0,0,0,.72); }
-    .card { background: rgba(17,17,17,.96); border: 1px solid rgba(238,116,41,.28); border-radius: 12px; overflow: hidden; transition: transform 0.3s; color:#fff; }
-    .card:hover { transform: translateY(-6px); }
-    .card img { height: 180px; object-fit: cover; }
-    .service-icon, .share-btn { color: var(--pw-primary); }
-    .share-btn:hover { color: #fff; }
-    .nav-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      border: 1px solid rgba(238,116,41,.48);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff !important;
-      margin-left: 8px;
-      background: rgba(238,116,41,.14);
-    }
-    .nav-icon:hover { background: var(--pw-primary); color: #fff !important; }
-    .fade-in { opacity: 0; animation: fadeInUp 0.8s forwards; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
-
-    #human-loader {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      background: radial-gradient(circle at center, #000000, #000000);
-      z-index: 9999;
-      transition: opacity 280ms ease;
-    }
-    #human-loader.hidden { opacity: 0; pointer-events: none; }
-    #human-loader video { width: 150px; height: 150px; border-radius: 20px; object-fit: cover; box-shadow: 0 12px 30px rgba(238,116,41,0.25); }
-    #human-loader p { margin-top: 14px; color: #fff; font-weight: 600; }
-
-    @media (max-width: 768px) {
-      .hero { padding: 85px 0 60px; }
-      .cta-btn { font-size: 1.8rem; margin: 10px; }
-    }
+    :root{--ink:#171714;--paper:#f3f0e9;--white:#fffdf8;--muted:#77766f;--line:rgba(23,23,20,.14);--copper:#bd7048;--copper-dark:#8f4d30;--olive:#74765d;--serif:Georgia,'Times New Roman',serif;--sans:'DM Sans',sans-serif;--display:'Manrope',sans-serif}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}button,input{font:inherit}.wrap{width:min(1180px,calc(100% - 48px));margin:auto}
+    .topline{background:var(--ink);color:#d8d4c9;font-size:11px;letter-spacing:.13em;text-transform:uppercase;padding:10px 0}.topline .wrap{display:flex;justify-content:space-between;gap:20px}
+    header{height:82px;display:flex;align-items:center;border-bottom:1px solid var(--line);background:rgba(243,240,233,.94);position:sticky;top:0;z-index:20;backdrop-filter:blur(14px)}.nav{display:flex;align-items:center;justify-content:space-between;width:100%}.brand{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:-.06em}.brand img{width:42px;height:42px;object-fit:contain}.brand small{display:block;font:500 9px var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:-3px}.navlinks{display:flex;align-items:center;gap:34px;font-size:12px;color:#55564f}.navlinks a:hover{color:var(--copper-dark)}.navcta,.button{display:inline-flex;align-items:center;justify-content:center;gap:12px;background:var(--ink);color:var(--white);padding:15px 21px;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;border:1px solid var(--ink);transition:.25s}.navcta:hover,.button:hover{background:var(--copper-dark);border-color:var(--copper-dark);color:white}.button.light{background:transparent;color:var(--ink);border-color:var(--line)}.button.light:hover{background:var(--ink);color:white}.arrow{font-size:16px;line-height:0}
+    .hero{padding:72px 0 76px;overflow:hidden}.eyebrow{display:flex;align-items:center;gap:12px;font-size:10px;letter-spacing:.19em;text-transform:uppercase;font-weight:700;color:var(--copper-dark)}.eyebrow:before{content:'';width:30px;height:1px;background:var(--copper)}.hero-grid{display:grid;grid-template-columns:1fr 1.02fr;gap:64px;align-items:center}.hero h1{font:500 clamp(48px,6.3vw,82px)/.99 var(--serif);letter-spacing:-.055em;margin:25px 0 24px;max-width:590px}.hero h1 em{font-style:italic;color:var(--copper-dark)}.hero-copy{font-size:16px;line-height:1.8;color:#626159;max-width:455px}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}.trustline{display:flex;align-items:center;gap:14px;margin-top:43px;color:#6b6a62;font-size:11px}.trustline strong{color:var(--ink);font-weight:700}.trustdot{width:5px;height:5px;border-radius:50%;background:var(--copper)}
+    .hero-visual{position:relative;min-height:560px;background:#d6d0c4;overflow:hidden}.hero-visual video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.72)}.hero-visual:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,20,18,.04),rgba(20,20,18,.45))}.visual-label{position:absolute;z-index:2;bottom:28px;left:30px;color:white}.visual-label span{display:block;font-size:9px;letter-spacing:.18em;text-transform:uppercase;opacity:.8}.visual-label strong{font:500 26px var(--serif);display:block;margin-top:7px}.visual-index{position:absolute;z-index:2;top:24px;right:24px;color:white;font-size:10px;letter-spacing:.15em}.seal{position:absolute;z-index:3;right:-24px;bottom:78px;background:var(--copper);color:white;width:112px;height:112px;border-radius:50%;display:grid;place-items:center;text-align:center;font-size:9px;line-height:1.5;letter-spacing:.1em;text-transform:uppercase;padding:18px;border:5px solid var(--paper)}
+    .metrics{background:var(--ink);color:var(--white);padding:29px 0}.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.metric{padding:5px 34px;border-right:1px solid rgba(255,255,255,.16)}.metric:first-child{padding-left:0}.metric:last-child{border:0}.metric strong{display:block;font:500 23px var(--serif);color:#e2a17b}.metric span{display:block;color:#c2beb3;font-size:11px;margin-top:5px;letter-spacing:.04em}
+    section.content{padding:104px 0}.section-head{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:42px}.section-head h2{font:500 clamp(36px,4.4vw,55px)/1.05 var(--serif);letter-spacing:-.045em;margin:16px 0 0;max-width:590px}.section-head p{color:var(--muted);font-size:13px;max-width:330px;margin:0 0 5px;line-height:1.8}
+    .service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.service{background:var(--white);border:1px solid var(--line);min-width:0}.service-media{height:235px;overflow:hidden;background:#d4cfc5}.service-media video,.service-media img{width:100%;height:100%;object-fit:cover;filter:saturate(.78);transition:transform .6s}.service:hover .service-media video,.service:hover .service-media img{transform:scale(1.04)}.service-body{padding:24px 24px 26px}.service-number{font-size:10px;color:var(--copper-dark);letter-spacing:.14em}.service h3{font:500 25px var(--serif);margin:10px 0}.service p{font-size:12px;color:var(--muted);line-height:1.8;margin:0}
+    .manifesto{background:#e6e1d7}.manifesto-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:90px;align-items:center}.manifesto-art{height:470px;position:relative;background:#c7c1b5;overflow:hidden}.manifesto-art img{width:100%;height:100%;object-fit:cover;filter:saturate(.65)}.manifesto-art:after{content:'PATCHWORKS / FIELD NOTES';position:absolute;bottom:20px;left:22px;color:white;font-size:9px;letter-spacing:.18em}.manifesto-copy h2{font:500 clamp(38px,4.5vw,58px)/1.06 var(--serif);letter-spacing:-.05em;margin:20px 0}.manifesto-copy>p{color:#66645c;font-size:14px;line-height:1.9;max-width:480px}.principles{margin-top:34px;border-top:1px solid var(--line)}.principle{display:grid;grid-template-columns:35px 1fr;gap:15px;padding:17px 0;border-bottom:1px solid var(--line)}.principle b{font:italic 16px var(--serif);color:var(--copper-dark)}.principle strong{display:block;font-size:13px}.principle span{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+    .process-grid{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.step{padding:28px 24px 32px 0;border-right:1px solid var(--line);margin-right:24px}.step:last-child{border:0;margin:0}.step small{font-size:10px;letter-spacing:.14em;color:var(--copper-dark)}.step h3{font:500 22px var(--serif);margin:17px 0 9px}.step p{font-size:11px;line-height:1.8;color:var(--muted);margin:0}
+    .quote{background:var(--ink);color:var(--white);padding:85px 0}.quote-inner{display:flex;justify-content:space-between;align-items:center;gap:40px}.quote blockquote{font:500 clamp(30px,4vw,48px)/1.15 var(--serif);letter-spacing:-.035em;max-width:760px;margin:0}.quote blockquote em{color:#d99a74}.quote-note{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#b9b5a9;white-space:nowrap}
+    .contact-grid{display:grid;grid-template-columns:1fr .85fr;gap:90px}.contact-copy h2{font:500 clamp(40px,5vw,62px)/1.04 var(--serif);letter-spacing:-.05em;margin:18px 0}.contact-copy p{font-size:13px;line-height:1.9;color:var(--muted);max-width:450px}.contact-details{margin-top:32px;font-size:12px;line-height:2.1}.contact-details a{border-bottom:1px solid var(--copper)}.form-panel{background:var(--white);border:1px solid var(--line);padding:34px}.form-panel h3{font:500 25px var(--serif);margin:0 0 8px}.form-panel>p{font-size:11px;color:var(--muted);margin:0 0 24px}.field{margin-bottom:15px}.field label{display:block;font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin-bottom:7px}.field input{width:100%;padding:14px 13px;border:1px solid var(--line);background:transparent;outline:none;font-size:13px}.field input:focus{border-color:var(--copper)}.form-panel button{width:100%;cursor:pointer}.fineprint{font-size:9px;color:var(--muted);margin-top:13px;line-height:1.7}
+    footer{background:#11110f;color:#c9c5ba;padding:30px 0}.footer-row{display:flex;justify-content:space-between;align-items:center;gap:20px}.footer-brand{font:700 16px var(--display);color:white;letter-spacing:-.05em}.footer-copy{font-size:10px;color:#8f8c83}.footer-links{display:flex;gap:18px;font-size:10px}.footer-links a:hover{color:white}
+    @media(max-width:900px){.hero-grid,.manifesto-grid,.contact-grid{grid-template-columns:1fr;gap:40px}.hero-visual{min-height:480px}.manifesto-art{height:360px}.section-head{align-items:start;flex-direction:column}.service-grid{grid-template-columns:repeat(2,1fr)}.process-grid{grid-template-columns:repeat(2,1fr)}.step:nth-child(2){border-right:0}.step:nth-child(-n+2){border-bottom:1px solid var(--line)}.step:nth-child(3),.step:nth-child(4){padding-top:25px}}
+    @media(max-width:600px){.wrap{width:min(100% - 32px,1180px)}.topline .wrap{justify-content:center}.topline span:last-child{display:none}header{height:70px}.navlinks{gap:14px}.navlinks a:not(.navcta){display:none}.navcta{padding:12px 13px;font-size:9px}.brand{font-size:17px}.brand img{width:36px;height:36px}.hero{padding:48px 0 55px}.hero h1{font-size:53px}.hero-copy{font-size:14px}.hero-visual{min-height:390px}.seal{width:88px;height:88px;right:-10px;bottom:65px;font-size:8px}.metric-grid{gap:8px}.metric{padding:5px 12px}.metric strong{font-size:18px}.metric span{font-size:9px}.metric:first-child{padding-left:0}section.content{padding:70px 0}.service-grid{grid-template-columns:1fr}.service-media{height:225px}.manifesto-grid{gap:28px}.manifesto-art{height:300px}.process-grid{grid-template-columns:1fr 1fr}.step{margin-right:12px;padding-right:12px}.step h3{font-size:19px}.quote{padding:65px 0}.quote-inner{display:block}.quote-note{margin-top:25px}.contact-grid{gap:28px}.form-panel{padding:24px}.footer-row{flex-wrap:wrap}.footer-links{width:100%}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
   </style>
 </head>
 <body>
-  <video id="bg-video" src="human_loader.mp4" autoplay muted loop playsinline></video>
-  <div id="bg-overlay"></div>
-  <div id="human-loader" aria-live="polite">
-    <video src="human_loader.mp4" autoplay muted loop playsinline></video>
-    <p>Loading Patchworks...</p>
-  </div>
-
-  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-    <div class="container">
-      <a class="navbar-brand" href="#"><img src="logo.png" alt="Patchworks" width="110"></a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
-      <div class="collapse navbar-collapse" id="nav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link nav-icon" href="#we-do" aria-label="We Do All"><i class="fa-solid fa-list-check"></i></a></li>
-          <li class="nav-item"><a class="nav-link nav-icon" href="#advantages" aria-label="Advantages"><i class="fa-solid fa-award"></i></a></li>
-          <li class="nav-item"><a class="nav-link nav-icon" href="#services" aria-label="Services"><i class="fa-solid fa-screwdriver-wrench"></i></a></li>
-          <li class="nav-item"><a class="nav-link nav-icon" href="#contact" aria-label="Join Waitlist"><i class="fa-solid fa-id-badge"></i></a></li>
-        </ul>
+  <div class="topline"><div class="wrap"><span>Hyderabad · Telangana</span><span>Thoughtful work. Visible proof. Lasting value.</span></div></div>
+  <header><div class="wrap nav">
+    <a class="brand" href="#" aria-label="Patchworks home"><img src="logo.png" alt=""><span>patchworks<small>Home improvement, considered.</small></span></a>
+    <nav class="navlinks" aria-label="Main navigation"><a href="#services">What we do</a><a href="#approach">Our approach</a><a href="#process">How it works</a><a class="navcta" href="#contact">Plan your project <span class="arrow">↗</span></a></nav>
+  </div></header>
+  <main>
+    <section class="hero"><div class="wrap hero-grid">
+      <div><div class="eyebrow">A better way to care for your home</div>
+        <h1>Good homes deserve <em>better</em> work.</h1>
+        <p class="hero-copy">From a repair that cannot wait to an upgrade you have been planning, Patchworks brings skilled people, considered execution and clear accountability to every corner of your home.</p>
+        <div class="hero-actions"><a class="button" href="#contact">Start a conversation <span class="arrow">↗</span></a><a class="button light" href="#services">Explore services <span class="arrow">↓</span></a></div>
+        <div class="trustline"><span class="trustdot"></span><span><strong>Trust, but verify.</strong> Every milestone deserves proof.</span></div>
       </div>
-    </div>
-  </nav>
-
-  <section class="hero">
-    <div class="container">
-      <img src="logo.png" alt="Patchworks Logo" class="fade-in">
-      <h1 class="fade-in">Patchworks</h1>
-      <h2 class="fade-in">Trust but Verify</h2>
-      <p class="fade-in">Document every repair step with verified evidence and transparent execution.</p>
-      <a href="https://wa.me/+919441828722?text=Hi%20Patchworks" class="cta-btn"><i class="fab fa-whatsapp"></i></a>
-      <a href="tel:+919441828722" class="cta-btn"><i class="fas fa-phone"></i></a>
-    </div>
-  </section>
-
-  <section id="we-do" class="section">
-    <div class="container">
-      <h3 class="text-center mb-5 fade-in" style="color:var(--pw-primary); font-size:2.1rem;">We Do ALL Kinds of Home Repairs & Upgrades</h3>
-      <div class="row g-4">
-        <div class="col-md-4 fade-in"><div class="card text-center"><video src="roof-fix.mp4" muted autoplay loop playsinline class="card-img-top"></video><div class="p-4"><i class="fas fa-tint service-icon fa-2x mb-2"></i><h5>Leak Repairs & Waterproofing</h5></div></div></div>
-        <div class="col-md-4 fade-in"><div class="card text-center"><video src="floor-addition.mp4" muted autoplay loop playsinline class="card-img-top"></video><div class="p-4"><i class="fas fa-layer-group service-icon fa-2x mb-2"></i><h5>Floor Additions & Extensions</h5></div></div></div>
-        <div class="col-md-4 fade-in"><div class="card text-center"><video src="plumbing-fix.mp4" muted autoplay loop playsinline class="card-img-top"></video><div class="p-4"><i class="fas fa-tools service-icon fa-2x mb-2"></i><h5>Plumbing & Electrical</h5></div></div></div>
+      <div class="hero-visual"><video src="human_loader.mp4" autoplay muted loop playsinline poster="roof-fix.jpeg"></video><span class="visual-index">01 / THE PATCHWORKS STANDARD</span><div class="visual-label"><span>Built around your home</span><strong>Care in every detail.</strong></div><div class="seal">Clear scope<br>Verified work<br>Better outcomes</div></div>
+    </div></section>
+    <section class="metrics"><div class="wrap metric-grid"><div class="metric"><strong>One clear plan</strong><span>Scope and expectations aligned before work begins.</span></div><div class="metric"><strong>Visible progress</strong><span>Photo and video evidence through the journey.</span></div><div class="metric"><strong>Accountable delivery</strong><span>Work tracked to the people responsible for it.</span></div></div></section>
+    <section id="services" class="content"><div class="wrap">
+      <div class="section-head"><div><div class="eyebrow">What we take care of</div><h2>One trusted team.<br>Many ways to improve home.</h2></div><p>Practical repairs and thoughtful upgrades, coordinated with care from first inspection to final handover.</p></div>
+      <div class="service-grid">
+        <article class="service"><div class="service-media"><video src="roof-fix.mp4" muted autoplay loop playsinline poster="roof-fix.jpeg"></video></div><div class="service-body"><span class="service-number">01 / PROTECT</span><h3>Leak repair & waterproofing</h3><p>Find the source, address the cause and protect the spaces that matter.</p></div></article>
+        <article class="service"><div class="service-media"><video src="floor-addition.mp4" muted autoplay loop playsinline></video></div><div class="service-body"><span class="service-number">02 / EXPAND</span><h3>Floor additions & extensions</h3><p>Make room for what comes next with planned, coordinated construction.</p></div></article>
+        <article class="service"><div class="service-media"><video src="plumbing-fix.mp4" muted autoplay loop playsinline></video></div><div class="service-body"><span class="service-number">03 / RESTORE</span><h3>Plumbing & electrical</h3><p>Essential home systems handled by the right trade professionals.</p></div></article>
+        <article class="service"><div class="service-media"><img src="readymix.jpeg" alt="Ready-mix concrete for home construction" loading="lazy"></div><div class="service-body"><span class="service-number">04 / SOURCE</span><h3>Materials & supplies</h3><p>Coordinate essential materials with clearer quantities and delivery.</p></div></article>
+        <article class="service"><div class="service-media"><img src="red-bricks.jpeg" alt="Construction bricks" loading="lazy"></div><div class="service-body"><span class="service-number">05 / BUILD</span><h3>Masonry & structural work</h3><p>Reliable trade coordination for the work your home depends on.</p></div></article>
+        <article class="service"><div class="service-media"><img src="sand-lorry.jpg" alt="Construction material delivery" loading="lazy"></div><div class="service-body"><span class="service-number">06 / DELIVER</span><h3>Site logistics & coordination</h3><p>Keep people, materials and work moving in the right sequence.</p></div></article>
       </div>
-    </div>
-  </section>
-
-  <section id="advantages" class="section section-light">
-    <div class="container">
-      <h3 class="text-center mb-5">Why Patchworks?</h3>
-      <ul class="list-unstyled text-center" style="max-width:700px;margin:0 auto;font-size:1.1rem;">
-        <li class="mb-3 fade-in">Verified builders with photo/video proof</li>
-        <li class="mb-3 fade-in">Timestamped execution and milestone history</li>
-        <li class="mb-3 fade-in">Incremental upgrades for budget-safe progress</li>
-        <li class="mb-3 fade-in">Family legacy record for every home</li>
-      </ul>
-    </div>
-  </section>
-
-  <section id="services" class="section">
-    <div class="container">
-      <h3 class="text-center mb-5 fade-in">Featured Services</h3>
-      <div class="row g-4">
-        <div class="col-md-6 col-lg-4 fade-in"><div class="card"><video src="roof-fix.mp4" class="card-img-top" muted autoplay loop playsinline></video><div class="card-body text-center"><h5>Leak Repair</h5><small>Before / After verified</small></div></div></div>
+    </div></section>
+    <section id="approach" class="content manifesto"><div class="wrap manifesto-grid">
+      <div class="manifesto-art"><img src="highcranes.mp4" alt="Construction in progress" onerror="this.style.display='none'" loading="lazy"></div>
+      <div class="manifesto-copy"><div class="eyebrow">The Patchworks difference</div><h2>Less guesswork.<br><em>More confidence.</em></h2><p>Home improvement should not feel like handing over the keys and hoping for the best. We make the work easier to understand, easier to follow and easier to verify.</p>
+        <div class="principles"><div class="principle"><b>01</b><div><strong>Know what is being done</strong><span>A clear scope, sensible estimates and agreed next steps.</span></div></div><div class="principle"><b>02</b><div><strong>See the work as it happens</strong><span>Progress updates and timestamped photo or video evidence.</span></div></div><div class="principle"><b>03</b><div><strong>Close the loop properly</strong><span>Milestone review, handover records and a traceable history.</span></div></div></div>
       </div>
-    </div>
-  </section>
-
-  <section id="contact" class="section section-light text-center">
-    <div class="container">
-      <h3 class="mb-4">Join the Waitlist - Early Access Opens Soon</h3>
-      <form action="https://docs.google.com/forms/d/e/1FAIpQLSf2jIvIBE5PMxMb9j6x1n1_96C5dyuv49BVyI7GMF1JMBnj2A/formResponse" method="POST" class="mx-auto" style="max-width:400px;" id="waitlist-form-basic">
-        <input type="text" name="entry.123456789" placeholder="Your Name" required class="form-control mb-3" autocomplete="name" inputmode="text" maxlength="60" pattern="[A-Za-z ]+" title="Name must contain letters and spaces only.">
-        <input type="tel" name="entry.987654321" placeholder="Phone Number" required class="form-control mb-3" autocomplete="tel" inputmode="numeric" maxlength="13" pattern="^\+91[0-9]{10}$|^[0-9]{10}$" title="Enter a valid 10-digit phone number.">
-        <input type="hidden" name="entry.REF_FIELD" id="entry-source-index" value="patchworks.in">
-        <button type="submit" class="btn w-100 py-3" style="background:var(--pw-primary); color:#fff;">Get Early Access</button>
-      </form>
-      <div class="mt-4"><span class="share-btn" onclick="copyReferral()"><i class="fas fa-share-alt"></i> Share &amp; Get Priority</span></div>
-    </div>
-  </section>
-
-  <footer style="background:var(--pw-dark);" class="py-4 text-center text-white">
-    <div>
-      <a href="https://facebook.com/patchworks" class="mx-3"><img src="fb-icon.png" width="32" alt="fb"></a>
-      <a href="https://instagram.com/patchworks" class="mx-3"><img src="ig-icon.png" width="32" alt="ig"></a>
-      <a href="https://x.com/patchworks" class="mx-3"><img src="x-icon.png" width="32" alt="x"></a>
-      <a href="https://t.me/patchworks" class="mx-3"><img src="tg-icon.png" width="32" alt="tg"></a>
-    </div>
-    <p class="mt-3 mb-0">&copy; 2026 Patchworks - Hyderabad - Telangana</p>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </div></section>
+    <section id="process" class="content"><div class="wrap">
+      <div class="section-head"><div><div class="eyebrow">A considered process</div><h2>From first conversation<br>to work well done.</h2></div><p>Every project follows a simple sequence, with clarity at each handoff.</p></div>
+      <div class="process-grid"><div class="step"><small>STEP 01</small><h3>Understand</h3><p>Tell us what your home needs. We capture the brief and arrange the next step.</p></div><div class="step"><small>STEP 02</small><h3>Plan</h3><p>Review the scope, estimate, schedule and people responsible before approval.</p></div><div class="step"><small>STEP 03</small><h3>Execute</h3><p>Work progresses with updates, evidence and accountable trade leads.</p></div><div class="step"><small>STEP 04</small><h3>Verify</h3><p>Review completion, record the handover and keep the work history.</p></div></div>
+    </div></section>
+    <section class="quote"><div class="wrap quote-inner"><blockquote>“Trust is important.<br><em>Proof makes it stronger.</em>”</blockquote><div class="quote-note">The Patchworks principle<br>Trust but Verify.</div></div></section>
+    <section id="contact" class="content"><div class="wrap contact-grid">
+      <div class="contact-copy"><div class="eyebrow">Your home, your next chapter</div><h2>Tell us what<br>needs doing.</h2><p>Share a little about your repair or upgrade. Our team will get in touch to understand the requirement and guide you on the next step.</p><div class="contact-details">Speak with Patchworks<br><a href="tel:+919441828722">+91 94418 28722</a><br><a href="https://wa.me/919441828722?text=Hi%20Patchworks" target="_blank" rel="noopener">WhatsApp our team ↗</a></div></div>
+      <div class="form-panel"><h3>Start with a few details.</h3><p>We will use these to follow up about your requirement.</p>
+        <form action="https://docs.google.com/forms/d/e/1FAIpQLSf2jIvIBE5PMxMb9j6x1n1_96C5dyuv49BVyI7GMF1JMBnj2A/formResponse" method="POST" target="_blank" id="waitlist-form-basic">
+          <div class="field"><label for="name">Your name</label><input id="name" type="text" name="entry.123456789" autocomplete="name" placeholder="Full name" maxlength="60" required></div>
+          <div class="field"><label for="phone">Mobile number</label><input id="phone" type="tel" name="entry.987654321" autocomplete="tel" inputmode="numeric" placeholder="10-digit mobile number" maxlength="13" required></div>
+          <input type="hidden" name="entry.REF_FIELD" value="patchworks.in">
+          <button class="button" type="submit">Request a call back <span class="arrow">↗</span></button>
+          <div class="fineprint">By submitting, you agree that Patchworks may contact you about this enquiry. We do not display your details publicly.</div>
+        </form>
+      </div>
+    </div></section>
+  </main>
+  <footer><div class="wrap footer-row"><div><div class="footer-brand">patchworks.</div><div class="footer-copy">© 2026 Patchworks · Hyderabad, Telangana</div></div><div class="footer-links"><a href="#services">Services</a><a href="#approach">Our approach</a><a href="https://wa.me/919441828722" target="_blank" rel="noopener">WhatsApp ↗</a></div></div></footer>
   <script>
-    function sanitizeNameValue(value) {
-      return value.replace(/[^A-Za-z ]/g, '').replace(/\s+/g, ' ').trimStart();
-    }
-
-    function extractIndianMobile(value) {
-      let digits = value.replace(/\D/g, '');
-      if (digits.length >= 12 && digits.startsWith('91')) {
-        digits = digits.slice(2);
-      }
-      if (digits.length > 10) {
-        digits = digits.slice(-10);
-      }
-      return digits;
-    }
-
-    function wireWaitlistValidation(formId) {
-      const form = document.getElementById(formId);
-      if (!form) return;
-
-      const nameInput = form.querySelector('input[name="entry.123456789"]');
-      const phoneInput = form.querySelector('input[name="entry.987654321"]');
-      if (!nameInput || !phoneInput) return;
-
-      nameInput.addEventListener('input', () => {
-        nameInput.value = sanitizeNameValue(nameInput.value);
-      });
-
-      phoneInput.addEventListener('focus', () => {
-        const digits = extractIndianMobile(phoneInput.value);
-        phoneInput.value = digits;
-      });
-
-      phoneInput.addEventListener('input', () => {
-        phoneInput.value = extractIndianMobile(phoneInput.value);
-      });
-
-      phoneInput.addEventListener('blur', () => {
-        const digits = extractIndianMobile(phoneInput.value);
-        phoneInput.value = digits.length === 10 ? `+91${digits}` : digits;
-      });
-
-      form.addEventListener('submit', (event) => {
-        nameInput.value = sanitizeNameValue(nameInput.value).trim();
-        const digits = extractIndianMobile(phoneInput.value);
-        const nameOk = /^[A-Za-z ]+$/.test(nameInput.value) && nameInput.value.length > 0;
-        const phoneOk = /^\d{10}$/.test(digits);
-
-        if (!nameOk) {
-          event.preventDefault();
-          alert('Name must contain only alphabets and spaces.');
-          nameInput.focus();
-          return;
-        }
-
-        if (!phoneOk) {
-          event.preventDefault();
-          alert('Phone number must be exactly 10 digits.');
-          phoneInput.focus();
-          return;
-        }
-
-        phoneInput.value = `+91${digits}`;
-        const sourceInput = document.getElementById('entry-source-index');
-        if (sourceInput) sourceInput.value = 'patchworks.in';
-      });
-    }
-
-    function enforceSilentVideos() {
-      document.querySelectorAll('video').forEach((video) => {
-        video.muted = true;
-        video.defaultMuted = true;
-        video.volume = 0;
-        video.setAttribute('muted', '');
-        video.removeAttribute('controls');
-
-        const tracks = video.audioTracks;
-        if (tracks && tracks.length) {
-          for (let i = 0; i < tracks.length; i += 1) {
-            tracks[i].enabled = false;
-          }
-        }
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', enforceSilentVideos);
-    document.addEventListener('DOMContentLoaded', () => wireWaitlistValidation('waitlist-form-basic'));
-
-    function animateOnScroll() {
-      document.querySelectorAll('.fade-in').forEach((el) => {
-        if (el.getBoundingClientRect().top < window.innerHeight * 0.88) {
-          el.style.animationPlayState = 'running';
-        }
-      });
-    }
-    window.addEventListener('scroll', animateOnScroll);
-    window.addEventListener('load', () => {
-      enforceSilentVideos();
-      animateOnScroll();
-      setTimeout(() => {
-        const loader = document.getElementById('human-loader');
-        if (loader) loader.classList.add('hidden');
-      }, 650);
+    const form=document.getElementById('waitlist-form-basic');
+    form.addEventListener('submit',e=>{
+      const name=document.getElementById('name'),phone=document.getElementById('phone');
+      name.value=name.value.replace(/[^A-Za-z .'-]/g,'').replace(/\s+/g,' ').trim();
+      const digits=phone.value.replace(/\D/g,'').replace(/^91/,'').slice(-10);
+      if(!/^[A-Za-z .'-]{2,60}$/.test(name.value)){e.preventDefault();alert('Please enter a valid name.');name.focus();return}
+      if(!/^[6-9]\d{9}$/.test(digits)){e.preventDefault();alert('Please enter a valid 10-digit Indian mobile number.');phone.focus();return}
+      phone.value='+91'+digits;
     });
-
-    function copyReferral() {
-      const url = window.location.href.split('?')[0] + '?ref=YOURCODE';
-      navigator.clipboard.writeText(url).then(() => {
-        alert('Referral link copied.');
-      });
-    }
+    const reveal=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.animate([{opacity:0,transform:'translateY(18px)'},{opacity:1,transform:'translateY(0)'}],{duration:650,easing:'cubic-bezier(.2,.7,.2,1)',fill:'both'});reveal.unobserve(entry.target)}}),{threshold:.12});
+    document.querySelectorAll('.service,.step,.principle').forEach(el=>reveal.observe(el));
   </script>
 </body>
 </html>
